@@ -4,7 +4,7 @@ For Microchip dsPIC33EP512GP806
 
 */
 
-#inndef REVF14_H
+#ifndef REVF14_H
 #define REFF14_H
 
 #include "pic24_all.h"
@@ -28,8 +28,9 @@ For Microchip dsPIC33EP512GP806
 #define LED3_HB (_LATB15)
 // These may be backward but IDK.
 // On the schematic the control pin is backward from the other two.
-#define LED3_HB_ON() (_LATB15 = 1)
-#define LED3_HB_OFF() (_LATB15 = 0)
+// I have swapped the control as the pin acts as the LED ground pin for LED3.
+#define LED3_HB_ON() (_LATB15 = 0)
+#define LED3_HB_OFF() (_LATB15 = 1)
 #define LED3_HB_TOGGLE() (_LATB15 = !_LATB15)
 
 // Configure SW1
