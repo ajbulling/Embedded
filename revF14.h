@@ -4,8 +4,9 @@ For Microchip dsPIC33EP512GP806
 
 */
 
+#pragma once
 #ifndef REVF14_H
-#define REFF14_H
+#define REVF14_H
 
 #include "pic24_all.h"
 
