@@ -12,34 +12,17 @@ Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
 #include "esos_pic24.h"
 
 // Define FSM
-typedef enum{
-    RG,
-    RA,
-    GR,
-    AR,
-    RR1,
-    RR2,
-} state_t
+// RG = 0, RA = 1, GR = 2, AR = 3, RR1 = 4, RR2 = 5
+int current_state = 0;
 
-const *char state_names[] = {
-    "RG",
-    "RA",
-    "GR",
-    "AR",
-    "RR1",
-    "RR2",
-};
-
-static state_t current_state = RG;
 
 // ESOS task to control which LEDs are displayed on the hardware
 ESOS_USER_TASK( button_press ){
     ESOS_TASK_BEGIN();
         while( TRUE ){
-            switch (current_state){
-                
+
                 // Red - Green
-                case RG:
+                if( current_state == 0 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_OFF();
@@ -52,10 +35,10 @@ ESOS_USER_TASK( button_press ){
                         LED2_OFF();
                         LED3_HB_OFF();
                     }
-                    break;
+                }
 
                 // Red - Amber
-                case RA:
+                if( current_state == 1 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_OFF();
@@ -68,10 +51,10 @@ ESOS_USER_TASK( button_press ){
                         LED2_OFF();
                         LED3_HB_OFF();
                     }
-                    break;
+                }
 
                 // Green - Red
-                case GR:
+                if( current_state == 2 ) {
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_ON();
@@ -84,10 +67,10 @@ ESOS_USER_TASK( button_press ){
                         LED2_OFF();
                         LED3_HB_ON();
                     }
-                    break;
+                }
 
                 // Amber - Red
-                case AR:
+                if( current_state == 3 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_ON();
@@ -100,27 +83,23 @@ ESOS_USER_TASK( button_press ){
                         LED2_ON();
                         LED3_HB_OFF();
                     }
-                    break;
+                }
                 
                 // Double red split into two states, allowing the FSM to maintain current postion.
                 // Red - Red - Case following RA.
-                case RR1:
+                if( current_state == 4 ){
                     LED1_ON();
                     LED2_OFF();
                     LED3_HB_OFF();
-                    break;
+                }
                 
                 // Red - Red - Case following AR.
-                case RR2:
+                if( current_state == 5 ){
                     LED1_ON();
                     LED2_OFF();
                     LED3_HB_OFF();
-                    break;
-
-                default:
-                    break; 
-            }    
-        }
+                }
+            }
     ESOS_TASK_END():
 }
 
@@ -129,10 +108,9 @@ ESOS_USER_TASK( button_press ){
 ESOS_USER_TASK( state_set ){
     ESOS_TASK_BEGIN();
         while( TRUE ){
-            switch (current_state){
 
                 // Red - Green
-                case RG:
+                if( current_state == 0 ){
                     if( SW1_PRESSED ) {
                         // Rush Hour Conditions
                         ESOS_TASK_WAIT_TICKS(30000);   
@@ -140,24 +118,24 @@ ESOS_USER_TASK( state_set ){
                     else{
                         ESOS_TASK_WAIT_TICKS(10000);
                     }
-                    current_state = RA;
-                    break;
+                    current_state = 1;
+                }
                 
                 // Red - Amber
-                case RA:
+                if( current_state == 1 ){
                     if( SW1_PRESSED ) {
                         // Rush Hour Conditions
                         ESOS_TASK_WAIT_TICKS(3000);
-                        current_state = RR1;
+                        current_state = 4;
                     }
                     else{
                         ESOS_TASK_WAIT_TICKS(3000);
-                        current_state = GR;
+                        current_state = 2;
                     }
-                    break;
+                }
                 
                 // Green - Red
-                case GR:
+                if( current_state == 2 ){
                     if( SW1_PRESSED ) {
                         //Rush Hour Conditions
                         ESOS_TASK_WAIT_TICKS(30000);
@@ -165,45 +143,41 @@ ESOS_USER_TASK( state_set ){
                     else{
                         ESOS_TASK_WAIT_TICKS(10000);
                     }
-                    current_state = AR;
-                    break;
+                    current_state = 3;
+                }
                 
                 // Amber - Red
-                case AR:
+                if( current_state == 3 ){
                     if ( SW1_PRESSED ){
                         // Rush Hour Conditions
                         ESOS_TASK_WAIT_TICKS(3000);
-                        current_state = RR2;
+                        current_state = 5;
                     }
                     else{
                         ESOS_TASK_WAIT_TICKS(3000);
-                        current_state = RG;
+                        current_state = 0;
                     }
-                    break;
+                }
 
                 // Double red split into two states, allowing the FSM to maintain current postion.
                 // Red - Red - Case following RA
-                case RR1:
+                if( current_state == 4 ){
                     if( SW1_PRESSED ){
                         // Rush Hour Conditions
                         ESOS_TASK_WAIT_TICKS(1000);
                     }
-                    current_state = GR;
-                    break;
+                    current_state = 2;
+                }
 
                 // Red - Red - Case following AR
-                case RR2:
+                if( current_state == 5 ){
                     if( SW1_PRESSED ){
                         // Rush Hour Conditions
                         ESOS_TASK_WAIT_TICKS(1000);
                     }
-                    current_state = RG;
-                    break;
-
-                default:
-                    break;  
+                    current_state = 0;
+                }
             }
-        }
     ESOS_TASK_END();
 }
 
