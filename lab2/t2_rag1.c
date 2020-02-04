@@ -132,6 +132,6 @@ void user_init(){
     SW3_CONFIG();
 
     // Start ESOS tasks
-    esos_register_task( button_press );
-    esos_register_task( state_set );
+    esos_RegisterTask( button_press );
+    esos_RegisterTask( state_set );
 }
