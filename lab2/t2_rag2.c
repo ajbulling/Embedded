@@ -20,25 +20,12 @@ const *char state_names[] = {
     "GR",
     "AR",
 };
-/*
+
 ESOS_USER_TASK( button_press ){
     ESOS_TASK_BEGIN();
         while( TRUE ){
-            if( SW3_PRESSED ){
-                // Display E-W Signals
-            }
-            else {
-                // Display N-S Signals
-            }
-        }
-    ESOS_TASK_END():
-}
-*/
-ESOS_USER_TASK( light_display ){
-    ESOS_TASK_BEGIN();
-    static state_t next_state = RG;
-        while( TRUE ){
-            switch (next_state){
+            switch (current_state){
+
                 case RG:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -52,10 +39,8 @@ ESOS_USER_TASK( light_display ){
                         LED2_OFF();
                         LED3_HB_OFF();
                     }
-                    next_state = RA;
-                    ESOS_TASK_WAIT_TICKS(10000);
                     break;
-                
+
                 case RA:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -69,10 +54,8 @@ ESOS_USER_TASK( light_display ){
                         LED2_OFF();
                         LED3_HB_OFF();
                     }
-                    next_state = GR;
-                    ESOS_TASK_WAIT_TICKS(3000);
                     break;
-                
+
                 case GR:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -86,10 +69,8 @@ ESOS_USER_TASK( light_display ){
                         LED2_OFF();
                         LED3_HB_ON();
                     }
-                    next_state = AR;
-                    ESOS_TASK_WAIT_TICKS(10000);
                     break;
-                
+
                 case AR:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -103,12 +84,44 @@ ESOS_USER_TASK( light_display ){
                         LED2_ON();
                         LED3_HB_OFF();
                     }
-                    next_state = RG;
-                    ESOS_TASK_WAIT_TICKS(3000);
                     break;
+
                 default:
+                    break; 
+            }    
+        }
+    ESOS_TASK_END():
+}
+
+
+static state_t current_state = RG;
+
+ESOS_USER_TASK( state_set ){
+    ESOS_TASK_BEGIN();
+        while( TRUE ){
+            switch (current_state){
+
+                case RG:
+                    ESOS_TASK_WAIT_TICKS(10000);
+                    current_state = RA;
                     break;
                 
+                case RA:
+                    ESOS_TASK_WAIT_TICKS(3000);
+                    current_state = GR;
+                    break;
+                
+                case GR:
+                    ESOS_TASK_WAIT_TICKS(10000);
+                    current_state = AR;
+                    break;
+                
+                case AR:
+                    ESOS_TASK_WAIT_TICKS(3000);
+                    current_state = RG;
+                    break;
+                default:
+                    break;  
             }
         }
     ESOS_TASK_END();
@@ -126,5 +139,5 @@ void user_init(){
     SW3_CONFIG();
 
     esos_register_task( button_press );
-    esos_register_task( light_display );
+    esos_register_task( state_set );
 }
