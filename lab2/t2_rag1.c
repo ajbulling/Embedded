@@ -1,12 +1,17 @@
 /*
 Embedded Systems Lab 2 Task 2.2.2
 Traffic signal controller specification #1
+
+By:
+Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
+
 */
 
 #include "esos.h"
 #include "revF14.h"
 #include "esos_pic24.h"
 
+// Define FSM
 typedef enum{
     RG,
     RA,
@@ -21,11 +26,15 @@ const *char state_names[] = {
     "AR",
 };
 
+static state_t current_state = RG;
+
+// ESOS task to control which LEDs are displayed on the hardware
 ESOS_USER_TASK( button_press ){
     ESOS_TASK_BEGIN();
         while( TRUE ){
             switch (current_state){
-
+                
+                // Red - Green
                 case RG:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -41,6 +50,7 @@ ESOS_USER_TASK( button_press ){
                     }
                     break;
 
+                // Red - Amber
                 case RA:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -56,6 +66,7 @@ ESOS_USER_TASK( button_press ){
                     }
                     break;
 
+                // Green - Red
                 case GR:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -71,6 +82,7 @@ ESOS_USER_TASK( button_press ){
                     }
                     break;
 
+                // Amber - Red
                 case AR:
                     if( SW3_PRESSED ){
                         // Display E-W Signals
@@ -93,29 +105,32 @@ ESOS_USER_TASK( button_press ){
     ESOS_TASK_END():
 }
 
-
-static state_t current_state = RG;
-
+// ESOS task used to update the current state of the FSM.
+// Contains wait timers and FSM decision logic
 ESOS_USER_TASK( state_set ){
     ESOS_TASK_BEGIN();
         while( TRUE ){
             switch (current_state){
-
+                
+                // Red - Green
                 case RG:
                     ESOS_TASK_WAIT_TICKS(10000);
                     current_state = RA;
                     break;
                 
+                // Red - Amber
                 case RA:
                     ESOS_TASK_WAIT_TICKS(3000);
                     current_state = GR;
                     break;
                 
+                // Green - Red
                 case GR:
                     ESOS_TASK_WAIT_TICKS(10000);
                     current_state = AR;
                     break;
                 
+                // Amber - Red
                 case AR:
                     ESOS_TASK_WAIT_TICKS(3000);
                     current_state = RG;
@@ -138,6 +153,7 @@ void user_init(){
     SW2_CONFIG();
     SW3_CONFIG();
 
+    // Start ESOS tasks
     esos_register_task( button_press );
     esos_register_task( state_set );
 }
