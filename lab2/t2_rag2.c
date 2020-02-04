@@ -12,6 +12,8 @@ typedef enum{
     RA,
     GR,
     AR,
+    RR1,
+    RR2,
 } state_t
 
 const *char state_names[] = {
@@ -19,6 +21,8 @@ const *char state_names[] = {
     "RA",
     "GR",
     "AR",
+    "RR1",
+    "RR2",
 };
 
 ESOS_USER_TASK( button_press ){
@@ -85,6 +89,18 @@ ESOS_USER_TASK( button_press ){
                         LED3_HB_OFF();
                     }
                     break;
+                
+                case RR1:
+                    LED1_ON();
+                    LED2_OFF();
+                    LED3_HB_OFF();
+                    break;
+
+                case RR2:
+                    LED1_ON();
+                    LED2_OFF();
+                    LED3_HB_OFF();
+                    break;
 
                 default:
                     break; 
@@ -102,24 +118,67 @@ ESOS_USER_TASK( state_set ){
             switch (current_state){
 
                 case RG:
-                    ESOS_TASK_WAIT_TICKS(10000);
+                    if( SW1_PRESSED ) {
+                        // Rush Hour Conditions
+                        ESOS_TASK_WAIT_TICKS(30000);   
+                    }
+                    else{
+                        ESOS_TASK_WAIT_TICKS(10000);
+                    }
                     current_state = RA;
                     break;
                 
                 case RA:
-                    ESOS_TASK_WAIT_TICKS(3000);
-                    current_state = GR;
+                    if( SW1_PRESSED ) {
+                        // Rush Hour Conditions
+                        ESOS_TASK_WAIT_TICKS(3000);
+                        current_state = RR1;
+                    }
+                    else{
+                        ESOS_TASK_WAIT_TICKS(3000);
+                        current_state = GR;
+                    }
                     break;
                 
                 case GR:
-                    ESOS_TASK_WAIT_TICKS(10000);
+                    if( SW1_PRESSED ) {
+                        //Rush Hour Conditions
+                        ESOS_TASK_WAIT_TICKS(30000);
+                    }
+                    else{
+                        ESOS_TASK_WAIT_TICKS(10000);
+                    }
                     current_state = AR;
                     break;
                 
                 case AR:
-                    ESOS_TASK_WAIT_TICKS(3000);
+                    if ( SW1_PRESSED ){
+                        // Rush Hour Conditions
+                        ESOS_TASK_WAIT_TICKS(3000);
+                        current_state = RR2;
+                    }
+                    else{
+                        ESOS_TASK_WAIT_TICKS(3000);
+                        current_state = RG;
+                    }
+                    break;
+
+                case RR1:
+                    if( SW1_PRESSED ){
+                        // Rush Hour Conditions
+                        ESOS_TASK_WAIT_TICKS(1000);
+                    }
+                    current_state = GR;
+                    break;
+
+                case RR2:
+                    if( SW1_PRESSED ){
+                        // Rush Hour Conditions
+                        ESOS_TASK_WAIT_TICKS(1000);
+                    }
                     current_state = RG;
                     break;
+
                 default:
                     break;  
             }
