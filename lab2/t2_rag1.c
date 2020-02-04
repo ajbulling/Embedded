@@ -12,30 +12,16 @@ Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
 #include "esos_pic24.h"
 
 // Define FSM
-typedef enum{
-    RG,
-    RA,
-    GR,
-    AR,
-} state_t
+// RG = 0, RA = 1, GR = 2, AR = 3
+int current_state = 0;
 
-const *char state_names[] = {
-    "RG",
-    "RA",
-    "GR",
-    "AR",
-};
-
-static state_t current_state = RG;
 
 // ESOS task to control which LEDs are displayed on the hardware
 ESOS_USER_TASK( button_press ){
     ESOS_TASK_BEGIN();
-        while( TRUE ){
-            switch (current_state){
-                
+        while( TRUE ){    
                 // Red - Green
-                case RG:
+                if( current_state == 0 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_OFF();
@@ -48,10 +34,10 @@ ESOS_USER_TASK( button_press ){
                         LED2_OFF();
                         LED3_HB_OFF();
                     }
-                    break;
+                }
 
                 // Red - Amber
-                case RA:
+                if( current_state == 1 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_OFF();
@@ -64,10 +50,10 @@ ESOS_USER_TASK( button_press ){
                         LED2_OFF();
                         LED3_HB_OFF();
                     }
-                    break;
+                }
 
                 // Green - Red
-                case GR:
+                if( current_state == 2 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_ON();
@@ -80,10 +66,10 @@ ESOS_USER_TASK( button_press ){
                         LED2_OFF();
                         LED3_HB_ON();
                     }
-                    break;
+                }
 
                 // Amber - Red
-                case AR:
+                if( current_state == 3 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
                         LED1_ON();
@@ -96,13 +82,9 @@ ESOS_USER_TASK( button_press ){
                         LED2_ON();
                         LED3_HB_OFF();
                     }
-                    break;
-
-                default:
-                    break; 
+                }
             }    
-        }
-    ESOS_TASK_END():
+    ESOS_TASK_END();
 }
 
 // ESOS task used to update the current state of the FSM.
@@ -110,35 +92,31 @@ ESOS_USER_TASK( button_press ){
 ESOS_USER_TASK( state_set ){
     ESOS_TASK_BEGIN();
         while( TRUE ){
-            switch (current_state){
                 
                 // Red - Green
-                case RG:
+                if( currrent_state == 0 ){
                     ESOS_TASK_WAIT_TICKS(10000);
-                    current_state = RA;
-                    break;
+                    current_state = 1;
+                }
                 
                 // Red - Amber
-                case RA:
+                if( current_state == 1 ){
                     ESOS_TASK_WAIT_TICKS(3000);
-                    current_state = GR;
-                    break;
+                    current_state = 2;
+                }
                 
                 // Green - Red
-                case GR:
+                if( current_state == 2 ){
                     ESOS_TASK_WAIT_TICKS(10000);
-                    current_state = AR;
-                    break;
+                    current_state = 3;
+                }
                 
                 // Amber - Red
-                case AR:
+                if( current_state == 3){
                     ESOS_TASK_WAIT_TICKS(3000);
-                    current_state = RG;
-                    break;
-                default:
-                    break;  
+                    current_state = 0;
+                }  
             }
-        }
     ESOS_TASK_END();
 }
 
