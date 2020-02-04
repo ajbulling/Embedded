@@ -7,10 +7,13 @@ Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
 
 */
 
-#include "esos.h"
-#include "revF14.h"
+#include <esos.h>
 #include "esos_pic24.h"
-
+#include "esos_pic24_rs232.h"
+#include "esos_pic24_spi.h"
+#include <p33EP512GP806.h>
+#include <pic24_all.h>
+#include "revF14.h"
 // Define FSM
 // RG = 0, RA = 1, GR = 2, AR = 3
 int current_state = 0;

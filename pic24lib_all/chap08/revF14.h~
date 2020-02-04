@@ -7,7 +7,7 @@ For Microchip dsPIC33EP512GP806
 #pragma once
 #define REVF14_H
 
-#include "pic24_all.h"
+#include <pic24_all.h>
 
 // Configure LED1
 #define LED1_CONFIG() CONFIG_RF4_AS_DIG_OUTPUT();
@@ -19,9 +19,9 @@ For Microchip dsPIC33EP512GP806
 // Configure LED2
 #define LED2_CONFIG() CONFIG_RB14_AS_DIG_OUTPUT()
 #define LED2(_LATB14)
-#define LED2_ON() (_LATB14 = 1;)
-#define LED2_OFF() (_LATB14 = 0;)
-#define LED2_HB_TOGGLE() (_LATB14 = !_LATB14;)
+#define LED2_ON() _LATB14 = 1;
+#define LED2_OFF() _LATB14 = 0;
+#define LED2_HB_TOGGLE() _LATB14 = !_LATB14;
 
 // Configure LED3
 #define LED3_HB_CONFIG() CONFIG_RB15_AS_DIG_OUTPUT()
