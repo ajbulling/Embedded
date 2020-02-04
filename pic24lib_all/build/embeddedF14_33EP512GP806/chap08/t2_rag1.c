@@ -16,7 +16,7 @@ Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
 #include "revF14.h"
 // Define FSM
 // RG = 0, RA = 1, GR = 2, AR = 3
-int current_state = 0;
+static int current_state = 0;
 
 
 // ESOS task to control which LEDs are displayed on the hardware
@@ -86,6 +86,7 @@ ESOS_USER_TASK( button_press ){
                         LED3_HB_OFF();
                     }
                 }
+	    ESOS_TASK_YIELD();
             }    
     ESOS_TASK_END();
 }
