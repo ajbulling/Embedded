@@ -100,7 +100,7 @@ ESOS_USER_TASK( button_press ){
                     LED3_HB_OFF();
                 }
             }
-    ESOS_TASK_END():
+    ESOS_TASK_END();
 }
 
 // ESOS task used to update the current state of the FSM.
@@ -193,6 +193,6 @@ void user_init(){
     SW3_CONFIG();
 
     // Start ESOS tasks
-    esos_register_task( button_press );
-    esos_register_task( state_set );
+    esos_RegisterTask( button_press );
+    esos_RegisterTask( state_set );
 }
