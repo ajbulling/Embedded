@@ -16,12 +16,12 @@ Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
 #include "revF14.h"
 // Define FSM
 // RG = 0, RA = 1, GR = 2, AR = 3
-int current_state = 0;
+static int current_state = 0;
 
 
 // ESOS task to control which LEDs are displayed on the hardware
 ESOS_USER_TASK( button_press ){
-    //ESOS_TASK_BEGIN();
+    ESOS_TASK_BEGIN();
         while( TRUE ){    
                 // Red - Green
                 if( current_state == 0 ){
@@ -87,40 +87,40 @@ ESOS_USER_TASK( button_press ){
                     }
                 }
             }    
-    //ESOS_TASK_END();
+    ESOS_TASK_END();
 }
 
 // ESOS task used to update the current state of the FSM.
 // Contains wait timers and FSM decision logic
 ESOS_USER_TASK( state_set ){
-    //ESOS_TASK_BEGIN();
+    ESOS_TASK_BEGIN();
         while( TRUE ){
                 
                 // Red - Green
                 if( current_state == 0 ){
-                    //ESOS_TASK_WAIT_TICKS(10000);
+                    ESOS_TASK_WAIT_TICKS(10000);
                     current_state = 1;
                 }
                 
                 // Red - Amber
                 if( current_state == 1 ){
-                    //ESOS_TASK_WAIT_TICKS(3000);
+                    ESOS_TASK_WAIT_TICKS(3000);
                     current_state = 2;
                 }
                 
                 // Green - Red
                 if( current_state == 2 ){
-                    //ESOS_TASK_WAIT_TICKS(10000);
+                    ESOS_TASK_WAIT_TICKS(10000);
                     current_state = 3;
                 }
                 
                 // Amber - Red
                 if( current_state == 3){
-                    //ESOS_TASK_WAIT_TICKS(3000);
+                    ESOS_TASK_WAIT_TICKS(3000);
                     current_state = 0;
                 }  
             }
-    //ESOS_TASK_END();
+    ESOS_TASK_END();
 }
 
 void user_init(){
