@@ -229,91 +229,9 @@ def buildTargetsSConscript(
 
 # Build over various MCUs
 # -----------------------
-# Build small, non-DMA on the PIC24HJ32GP202
-buildTargetsSConscript(['chap08', 'chap09', 'chap10', 'chap11', 'chap12'],
-env.Clone(MCU='24HJ64GP202'), 'default')
-
-# Build everything on the PIC24FJ64GA002
-buildTargetsSConscript(['chap08', 'chap09', 'chap10', 'chap11', 'chap12',
-                        'chap15'],
-  env.Clone(MCU='24FJ64GA002'), 'default')
-
-# Build small, non-DMA on the dsPIC33FJ32GP202
-buildTargetsSConscript(['chap08', 'chap09', 'chap10',                'chap11', 'chap12'],
-  env.Clone(MCU='33FJ64GP202'), 'default')
-
-# Minimally test the 24F16KA102. It has hardmapped UART pins.
-buildTargetsSConscript(['reset', 'echo'],
-  env.Clone(MCU='24F32KA302', CPPDEFINES='HARDWARE_PLATFORM=HARDMAPPED_UART'), 'hardmappedUART')
-
-# Build the PIC24HJ64GP502-compatible directories.
-buildTargetsSConscript(['chap11', 'chap13', 'chap15'],
-  env.Clone(MCU='24HJ64GP502'), 'default')
-
-# Same as above, but for a dsPIC
-buildTargetsSConscript(['chap08', 'chap09', 'chap10', 'chap11', 'chap12',
-                        'chap13', 'chap15'],
-  env.Clone(MCU='33FJ128GP802'), 'default')
-
-# Same as above, but for the dsPIC33EP128GP502
-buildTargetsSConscript(['chap08', 'chap09', 'chap10', 'chap12',
-                        'chap13', 'chap15'],
-  env.Clone(MCU='33EP128GP502'), 'default')
-
-# Build some for the PIC24E device
-buildTargetsSConscript(['chap08', 'chap09', 'chap10', 'chap11',  'chap12'],
-  env.Clone(MCU='24EP64GP202'), 'default')
-
-# Build over various hardware platforms
-# -------------------------------------
-# Same as above, but for the dsPIC33EP128GP502 on a MicroStickII target
-buildTargetsSConscript(['chap08', 'chap09', 'chap10', 'chap12',
-                        'chap13', 'chap15'],
-  env.Clone(MCU='33EP128GP502', CPPDEFINES='HARDWARE_PLATFORM=MICROSTICK2'), 'microstick2')
-
-# Build some selected chapter applications for the chip used on the Fall 2013 Embedded systems board
-buildTargetsSConscript(['chap08', 'chap09', 'chap13'],
-  env.Clone(MCU='33EP128GP504', CPPDEFINES='HARDWARE_PLATFORM=EMBEDDED_C1'), 'embeddedC1')
-
 # Build some selected chapter applications for the CAN2 rev.F14 board used in ECE4723 Embedded Systems
-buildTargetsSConscript(['chap08', 'chap09', 'chap14'],
+buildTargetsSConscript(['chap08', 'chap09', 'chap14', 'lab2', 'lab3'],
   env.Clone(MCU='33EP512GP806', CPPDEFINES='HARDWARE_PLATFORM=EMBEDDED_F14'), 'embeddedF14')
-
-# Build for the explorer board
-buildTargetsSConscript(['explorer'],
-  env.Clone(MCU='24FJ128GA010', CPPDEFINES='HARDWARE_PLATFORM=EXPLORER16_100P'), 'explorer16100p')
-buildTargetsSConscript(['explorer'],
-  env.Clone(MCU='24HJ256GP610', CPPDEFINES='HARDWARE_PLATFORM=EXPLORER16_100P'), 'explorer16100p')
-
-# Build reset on other supported platforms
-buildTargetsSConscript(['reset'],
-  env.Clone(MCU='24FJ64GA002',  CPPDEFINES='HARDWARE_PLATFORM=STARTER_BOARD_28P'), 'starterboard28p')
-buildTargetsSConscript(['reset'],
-  env.Clone(MCU='33FJ128GP204', CPPDEFINES='HARDWARE_PLATFORM=DANGEROUS_WEB'), 'dangerousweb')
-
-# Build over various clocks
-# -------------------------
-# Build reset with various clock options on all processors
-for clock in ['SIM_CLOCK', 'FRCPLL_FCY16MHz', 'FRC_FCY4MHz',
-  'PRI_NO_PLL_7372KHzCrystal', 'PRIPLL_8MHzCrystal_16MHzFCY']:
-    buildTargetsSConscript(['reset'],
-      env.Clone(MCU='24FJ64GA002', CPPDEFINES='CLOCK_CONFIG=' + clock), 'default', clock)
-    buildTargetsSConscript(['reset'],
-      env.Clone(MCU='24FJ64GA102', CPPDEFINES='CLOCK_CONFIG=' + clock), 'default', clock)
-    buildTargetsSConscript(['reset'],
-      env.Clone(MCU='24F32KA302', CPPDEFINES=['CLOCK_CONFIG=' + clock, 'HARDWARE_PLATFORM=HARDMAPPED_UART']), 'hardmappedUART', clock)
-for clock in ['SIM_CLOCK', 'PRI_NO_PLL_7372KHzCrystal', 'FRC_FCY3685KHz',
-  'FRCPLL_FCY40MHz', 'PRIPLL_7372KHzCrystal_40MHzFCY', 'PRIPLL_8MHzCrystal_40MHzFCY']:
-    buildTargetsSConscript(['reset'],
-      env.Clone(MCU='24HJ32GP202',  CPPDEFINES='CLOCK_CONFIG=' + clock), 'default', clock)
-    buildTargetsSConscript(['reset'],
-      env.Clone(MCU='33FJ128GP802', CPPDEFINES='CLOCK_CONFIG=' + clock), 'default', clock)
-
-# Misc builds
-# -----------
-# Do a no-float build of reset
-buildTargetsSConscript(['reset'],
-  env.Clone(MCU='24HJ32GP202',  CPPDEFINES='_NOFLOAT'), 'default', 'nofloat')
 
 # Bootloader builds
 # =================
@@ -343,58 +261,11 @@ def buildTargetsBootloader(
     SConscript('SCons_bootloader.py', exports = 'env bin2hex linker_side_effect',
       variant_dir = 'build/bootloader_' + hardware_alias + '_' + mcu)
 
-# Build the bootloader for a variety of common MCUs
-# that can have UART in the "default" location, e.g.
-# RB10=MCUrx and RB11=MCUtx
-for mcu in (
-    '24FJ32GA002',
-    '24FJ64GA002',
-    '24FJ32GA102',
-    '24FJ64GA102',
-    '24FJ64GB002',
-    '24FJ64GB004',
-
-    '24HJ12GP202',
-    '24HJ32GP202',
-    '24HJ64GP502',
-    '24HJ128GP502',
-
-    '24EP64GP202',
-
-    '33FJ32GP202',
-    '33FJ128GP802',
-
-    '33EP128GP502',
-    '33EP128GP504',
-):
-    buildTargetsBootloader(env, mcu)
-
-# Build the bootloader for MCUs with a hardmapped UART.
-for mcu in ('24F32KA302',):
-    buildTargetsBootloader(env, mcu,
-    hardware_platform='HARDMAPPED_UART',
-    hardware_alias='hardmappedUART')
-
 # Build bootloader for MCUs on specific hardware platforms.
-buildTargetsBootloader(env,
-    mcu='33EP128GP504',
-    hardware_platform='EMBEDDED_C1',
-    hardware_alias='embeddedC1')
-
 buildTargetsBootloader(env,
     mcu='33EP512GP806',
     hardware_platform='EMBEDDED_F14',
     hardware_alias='embeddedF14')
-
-for mcu in (
-    '24FJ64GB002',
-    '24HJ128GP502',
-    '33EP128GP502',
-):
-    buildTargetsBootloader(env,
-        mcu,
-        hardware_platform='MICROSTICK2',
-        hardware_alias='microstick2')
 
 # ESOS builds
 # ===========
@@ -408,21 +279,4 @@ def buildTargetsEsos(env, mcu, hardware_platform = 'DEFAULT_DESIGN', hardware_al
     SConscript('SCons_esos.py', exports = 'env bin2hex linker_side_effect',
       variant_dir = 'build/esos_' + hardware_alias + '_' + mcu)
 
-# Build ESOS over a variety of chips
-# that can have UART in the "default" location, e.g.
-# RB10=MCUrx and RB11=MCUtx
-for mcu in (
-            '24HJ64GP202',
-            '24FJ64GA002',
-            '24HJ128GP502',
-            '24EP64GP202',
-            '33FJ64GP202',
-            '33FJ128GP802',
-            '33EP128GP502',
-            '33EP128GP504',
-           ):
-    buildTargetsEsos(env, mcu)
-
-buildTargetsEsos(env, mcu='33EP128GP504', hardware_platform='EMBEDDED_C1', hardware_alias='embeddedC1')
 buildTargetsEsos(env, mcu='33EP512GP806', hardware_platform='EMBEDDED_F14', hardware_alias='embeddedF14')
-buildTargetsEsos(env, mcu='33EP128GP502', hardware_platform='MICROSTICK2', hardware_alias='microstick2')
