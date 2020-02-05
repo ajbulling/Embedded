@@ -1,2 +1,4 @@
 *.dblite
 pic24lib_all/.sconsign.dblite
+*.swp
+*~
