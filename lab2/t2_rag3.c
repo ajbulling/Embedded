@@ -13,7 +13,7 @@ Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
 
 // Define FSM
 // RG = 0, RA = 1, GR = 2, AR = 3, RR1 = 4, RR2 = 5, RT = 6, TR = 7
-int current_state = 0;
+static int current_state = 0;
 
 
 // ESOS task to control which LEDs are displayed on the hardware
@@ -113,7 +113,7 @@ ESOS_USER_TASK( button_press ){
                         // Display N-S Signals
                         LED1_ON();
                         LED2_OFF();
-                        LED3_HB_OFF()
+                        LED3_HB_OFF();
                     }
                 }
                 
@@ -121,7 +121,7 @@ ESOS_USER_TASK( button_press ){
                 if( current_state == 7 ){
                     if( SW3_PRESSED ){
                         // Display E-W Signals
-                        LED1_ON()
+                        LED1_ON();
                         LED2_OFF();
                         LED3_HB_OFF();
                     }
@@ -133,6 +133,7 @@ ESOS_USER_TASK( button_press ){
                         // Handled by led_flash ESOS_USER_TASK
                     }
                 } 
+	    ESOS_TASK_YIELD();
             }    
     ESOS_TASK_END();
 }
@@ -155,6 +156,9 @@ ESOS_USER_TASK( led_flash ){
                 LED3_HB_OFF();
                 ESOS_TASK_WAIT_TICKS(250);
             }
+	    else {
+		ESOS_TASK_YIELD();
+	    }
         }
     ESOS_TASK_END();
 }
@@ -164,7 +168,6 @@ ESOS_USER_TASK( led_flash ){
 ESOS_USER_TASK( state_set ){
     ESOS_TASK_BEGIN();
         while( TRUE ){
-= 
                 // Red - Green
                 if( current_state == 0 ){
                     if( SW1_PRESSED ) {

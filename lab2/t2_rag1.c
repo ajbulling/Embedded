@@ -7,13 +7,16 @@ Jesse Tutor, Zach Fauver, Andrew Bullington, Will Gaines
 
 */
 
-#include "esos.h"
-#include "revF14.h"
+#include <esos.h>
 #include "esos_pic24.h"
-
+#include "esos_pic24_rs232.h"
+#include "esos_pic24_spi.h"
+#include <p33EP512GP806.h>
+#include <pic24_all.h>
+#include "revF14.h"
 // Define FSM
 // RG = 0, RA = 1, GR = 2, AR = 3
-int current_state = 0;
+static int current_state = 0;
 
 
 // ESOS task to control which LEDs are displayed on the hardware
@@ -83,6 +86,7 @@ ESOS_USER_TASK( button_press ){
                         LED3_HB_OFF();
                     }
                 }
+	    ESOS_TASK_YIELD();
             }    
     ESOS_TASK_END();
 }
@@ -94,7 +98,7 @@ ESOS_USER_TASK( state_set ){
         while( TRUE ){
                 
                 // Red - Green
-                if( currrent_state == 0 ){
+                if( current_state == 0 ){
                     ESOS_TASK_WAIT_TICKS(10000);
                     current_state = 1;
                 }
