@@ -210,7 +210,7 @@ inline bool esos_uiF14_isRpgTurningCCW( void ) {
 }
 
 int16_t esos_uiF14_getRpgVelocity_i16( void ) {
-    return _st_esos_uiF14Data.i16_RPGVelocity;
+    return _st_esos_uiF14Data.u16_RPGCounter - _st_esos_uiF14Data.u16_lastRPGCounter;
 }
 
 // UIF14 INITIALIZATION FUNCTION
