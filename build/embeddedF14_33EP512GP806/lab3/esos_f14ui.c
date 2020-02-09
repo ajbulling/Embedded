@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #include "esos.h"
 #include "esos_f14ui.h"
+#include "revF14.h"
+#include "pic24_all.h"
 
 // PRIVATE FUNCTIONS
 inline void _esos_uiF14_setRPGCounter (uint16_t newValue) {
@@ -22,6 +24,8 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 }
 
 // PUBLIC SWITCH FUNCTIONS
+
+//SW1
 inline bool esos_uiF14_getSW1Pressed (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
 }
@@ -34,6 +38,7 @@ inline bool esos_uiF14_getSW1DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW1DoublePressed==TRUE);
 }
 
+//SW2
 inline bool esos_uiF14_getSW2Pressed (void) {
     return (_st_esos_uiF14Data.b_SW2Pressed==TRUE);
 }
@@ -46,6 +51,7 @@ inline bool esos_uiF14_getSW2DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW2DoublePressed==TRUE);
 }
 
+//SW3
 inline bool esos_uiF14_getSW3Pressed (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
 }
@@ -60,6 +66,7 @@ inline bool esos_uiF14_getSW3DoublePressed (void) {
 
 // PUBLIC LED FUNCTIONS
 
+//LED1
 inline bool esos_uiF14_isLED1On (void) {
     return (_st_esos_uiF14Data.b_LED1On==TRUE);
 }
@@ -88,6 +95,8 @@ inline void esos_uiF14_flashLED1( uint16_t u16_period) {
     return;
 }
 
+
+//LED2
 inline bool esos_uiF14_isLED2On (void) {
     return (_st_esos_uiF14Data.b_LED2On==TRUE);
 }
@@ -116,6 +125,7 @@ inline void esos_uiF14_flashLED2( uint16_t u16_period) {
     return;
 }
 
+//LED3
 inline bool esos_uiF14_isLED3On (void) {
     return (_st_esos_uiF14Data.b_LED3On==TRUE);
 }
@@ -144,6 +154,7 @@ inline void esos_uiF14_flashLED3( uint16_t u16_period) {
     return;
 }
 
+//RED LED / LED1
 inline void esos_uiF14_turnRedLEDOn (void) {
     esos_uiF14_turnLED1On();
 }
@@ -152,6 +163,7 @@ inline void esos_uiF14_turnRedLEDOff (void) {
     esos_uiF14_turnLED1Off();
 }
 
+//YELLOW LED / LED2
 inline void esos_uiF14_turnYellowLEDOn (void) {
     esos_uiF14_turnLED2On();
 }
@@ -160,6 +172,7 @@ inline void esos_uiF14_turnYellowLEDOff (void) {
     esos_uiF14_turnLED2Off();
 }
 
+//GREEN LED / LED3
 inline void esos_uiF14_turnGreenLEDOn (void) {
     esos_uiF14_turnLED3On();
 }
@@ -179,32 +192,45 @@ inline bool esos_uiF14_isRpgTurning ( void ) {
 }
 
 inline bool esos_uiF14_isRpgTurningSlow( void ) {
-  // not yet implemented
+    return (abs(esos_uiF14_getRpgVelocity_i16()) <= 5);
 }
 
 inline bool esos_uiF14_isRpgTurningMedium( void ) {
-  // not yet implemented
+    return (5 < abs(esos_uiF14_getRpgVelocity_i16()) < 10);
 }
 
 inline bool esos_uiF14_isRpgTurningFast( void ) {
-  // not yet implemented
+    return (10 <= abs(esos_uiF14_getRpgVelocity_i16()));
 }
 
 inline bool esos_uiF14_isRpgTurningCW( void ) {
-  // not yet implemented
+    return (esos_uiF14_getRpgVelocity_i16() > 0);
 }
 
 inline bool esos_uiF14_isRpgTurningCCW( void ) {
-  // not yet implemented
+    return (esos_uiF14_getRpgVelocity_i16() < 0);
 }
 
 int16_t esos_uiF14_getRpgVelocity_i16( void ) {
-    return _st_esos_uiF14Data.i16_RPGVelocity;
+    return _st_esos_uiF14Data.u16_RPGCounter - _st_esos_uiF14Data.u16_lastRPGCounter;
 }
 
 // UIF14 INITIALIZATION FUNCTION
 void config_esos_uiF14() {
-  // setup your UI implementation
+  // Configure LEDs
+  LED1_CONFIG();
+  LED2_CONFIG();
+  LED3_HB_CONFIG();
+
+  // Configure switches
+  SW1_CONFIG();
+  SW2_CONFIG();
+  SW3_CONFIG();
+
+  // Configure rotary encoder
+  CONFIG_RPGA();
+  CONFIG_RPGB();
+
   esos_RegisterTask( __uiF14_task );
 }
 

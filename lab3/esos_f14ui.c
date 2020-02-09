@@ -9,6 +9,8 @@
 #include <stdbool.h>
 #include "esos.h"
 #include "esos_f14ui.h"
+#include "revF14.h"
+#include "pic24_all.h"
 
 // PRIVATE FUNCTIONS
 inline void _esos_uiF14_setRPGCounter (uint16_t newValue) {
@@ -215,7 +217,20 @@ int16_t esos_uiF14_getRpgVelocity_i16( void ) {
 
 // UIF14 INITIALIZATION FUNCTION
 void config_esos_uiF14() {
-  // setup your UI implementation
+  // Configure LEDs
+  LED1_CONFIG();
+  LED2_CONFIG();
+  LED3_HB_CONFIG();
+
+  // Configure switches
+  SW1_CONFIG();
+  SW2_CONFIG();
+  SW3_CONFIG();
+
+  // Configure rotary encoder
+  CONFIG_RPGA();
+  CONFIG_RPGB();
+
   esos_RegisterTask( __uiF14_task );
 }
 
