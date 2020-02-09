@@ -166,3 +166,4 @@ if 'lab2' in buildTargets:
   buildWithCommonSources(['lab2/*.c'], PIC24SupportLibObjects, env, {}, 'lab2')
 if 'lab3' in buildTargets:
   buildWithCommonSources(['lab3/*.c'], PIC24SupportLibObjects, env, {}, 'lab3')
+
