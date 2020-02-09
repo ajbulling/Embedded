@@ -22,6 +22,8 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 }
 
 // PUBLIC SWITCH FUNCTIONS
+
+//SW1
 inline bool esos_uiF14_getSW1Pressed (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
 }
@@ -34,6 +36,7 @@ inline bool esos_uiF14_getSW1DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW1DoublePressed==TRUE);
 }
 
+//SW2
 inline bool esos_uiF14_getSW2Pressed (void) {
     return (_st_esos_uiF14Data.b_SW2Pressed==TRUE);
 }
@@ -46,6 +49,7 @@ inline bool esos_uiF14_getSW2DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW2DoublePressed==TRUE);
 }
 
+//SW3
 inline bool esos_uiF14_getSW3Pressed (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
 }
@@ -60,6 +64,7 @@ inline bool esos_uiF14_getSW3DoublePressed (void) {
 
 // PUBLIC LED FUNCTIONS
 
+//LED1
 inline bool esos_uiF14_isLED1On (void) {
     return (_st_esos_uiF14Data.b_LED1On==TRUE);
 }
@@ -88,6 +93,8 @@ inline void esos_uiF14_flashLED1( uint16_t u16_period) {
     return;
 }
 
+
+//LED2
 inline bool esos_uiF14_isLED2On (void) {
     return (_st_esos_uiF14Data.b_LED2On==TRUE);
 }
@@ -116,6 +123,7 @@ inline void esos_uiF14_flashLED2( uint16_t u16_period) {
     return;
 }
 
+//LED3
 inline bool esos_uiF14_isLED3On (void) {
     return (_st_esos_uiF14Data.b_LED3On==TRUE);
 }
@@ -144,6 +152,7 @@ inline void esos_uiF14_flashLED3( uint16_t u16_period) {
     return;
 }
 
+//RED LED / LED1
 inline void esos_uiF14_turnRedLEDOn (void) {
     esos_uiF14_turnLED1On();
 }
@@ -152,6 +161,7 @@ inline void esos_uiF14_turnRedLEDOff (void) {
     esos_uiF14_turnLED1Off();
 }
 
+//YELLOW LED / LED2
 inline void esos_uiF14_turnYellowLEDOn (void) {
     esos_uiF14_turnLED2On();
 }
@@ -160,6 +170,7 @@ inline void esos_uiF14_turnYellowLEDOff (void) {
     esos_uiF14_turnLED2Off();
 }
 
+//GREEN LED / LED3
 inline void esos_uiF14_turnGreenLEDOn (void) {
     esos_uiF14_turnLED3On();
 }
