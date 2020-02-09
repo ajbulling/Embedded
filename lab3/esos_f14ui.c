@@ -179,23 +179,23 @@ inline bool esos_uiF14_isRpgTurning ( void ) {
 }
 
 inline bool esos_uiF14_isRpgTurningSlow( void ) {
-  // not yet implemented
+    return (abs(esos_uiF14_getRpgVelocity_i16()) <= 5);
 }
 
 inline bool esos_uiF14_isRpgTurningMedium( void ) {
-  // not yet implemented
+    return (5 < abs(esos_uiF14_getRpgVelocity_i16()) < 10);
 }
 
 inline bool esos_uiF14_isRpgTurningFast( void ) {
-  // not yet implemented
+    return (10 <= abs(esos_uiF14_getRpgVelocity_i16()));
 }
 
 inline bool esos_uiF14_isRpgTurningCW( void ) {
-  // not yet implemented
+    return (esos_uiF14_getRpgVelocity_i16() > 0);
 }
 
 inline bool esos_uiF14_isRpgTurningCCW( void ) {
-  // not yet implemented
+    return (esos_uiF14_getRpgVelocity_i16() < 0);
 }
 
 int16_t esos_uiF14_getRpgVelocity_i16( void ) {
