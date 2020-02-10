@@ -5,6 +5,67 @@
 #include "revF14.h"
 #include "pic24_all.h"
 
+ESOS_USER_TASK ( SERIAL_PRINT ){
+    while( TRUE ){
+        if ( esos_uiF14_getSW1Pressed()){
+            outString("SW1 Pressed");
+        }
+
+        if ( esos_uiF14_getSw2Pressed()){
+            outString("SW2 Pressed");
+        }
+
+        if ( esos_uiF14_getSw3Pressed()){
+            outString("SW3 Pressed");
+        }
+
+        if ( esos_uiF14_getSW1DoublePressed()){
+            outString("SW1 Double Pressed");
+        }
+
+        if ( esos_uiF14_getSW2DoublePressed()){
+            outString("SW2 Double Pressed");
+        }
+
+        if ( esos_uiF14_getSW3DoublePressed()){
+            outString("SW3 Double Pressed");
+        }
+
+        if ( esos_uiF14_isRpgTurning()) {
+            outString("RPG is turning");
+            if ( esos_uiF14_isRpgTurningSlow()){
+                if ( esos_uiF14_isRpgTurningCW()) {
+                    outString("RPG is turning CW slow")
+                }
+
+                if ( esos_uiF14_isRpgTurningCCW()) {
+                    outString("RPG is turning CCW slow")
+                }
+            }
+
+            if ( esos_uiF14_isRpgTurningMedium()){
+                if ( esos_uiF14_isRpgTurningCW()) {
+                    outString("RPG is turning CW medium")
+                }
+
+                if ( esos_uiF14_isRpgTurningCCW()) {
+                    outString("RPG is turning CCW medium");
+                }
+            }
+
+            if ( esos_uiF14_isRpgTurningFast()) {
+                if ( esos_uiF14_isRpgTurningCW()) {
+                    outString("RPG is turning CW fast");
+                }
+
+                if ( esos_uiF14_isRpgTurningCCW()) {
+                    outString("RPG is turning CCW fast");
+                }
+            }
+        }
+    }
+}
+
 ESOS_USER_TASK( LED3_blink ){
     while ( TRUE ){
         esos_uiF14_flashLED3(500);
