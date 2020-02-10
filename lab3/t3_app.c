@@ -32,12 +32,34 @@ ESOS_USER_TASK( LED2_state ){
     }
 }
 
+ESOS_USER_TASK( LED1_state){
+    while ( TRUE ){
+        if ( esos_uiF14_getSW1Pressed() | esos_uiF14getSW2Pressed() ){
+            esos_uiF14_turnLED1On();
+        }
+        else {
+            esos_uiF14_turnLED1Off();
+        }
+        if ( esos_uiF14_getSW1DoublePressed() | esos_uiF14_SW2DoublePressed() ){
+            esos_uiF14_flashLED1(50);
+            esos_uiF14_flashLED1(50);
+            esos_uiF14_flashLED1(50);
+        }
+    }
+}
+
 void user_init() {
     // Configgure LED hardware
     LED1_CONFIG();
     LED2_CONFIG();
     LED3_HB_CONFIG();
 
+    // Configure switch hardware
+    SW1_CONFIG();
+    SW2_CONFIG();
+    SW3_CONFIG();
+
     // Start ESOS tasks
     esos_RegisterTask( LED3_blink );
+    esos_RegisterTask( LED2_state );
 }
