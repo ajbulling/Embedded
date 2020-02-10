@@ -78,4 +78,5 @@ void user_init() {
     // Start ESOS tasks
     esos_RegisterTask( LED3_blink );
     esos_RegisterTask( LED2_state );
+    esos_RegisterTask( LED1_state );
 }
