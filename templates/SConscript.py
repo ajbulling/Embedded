@@ -70,7 +70,7 @@ def searchAndReplace(
 
   # Use newline='' to preserve current line endings; in particular, this
   # keeps line endings Unix-style, even when run under Windows.
-  with open(destFileName, openMode, encoding='utf-8', newline='') as outFile:
+  with open(destFileName, openMode) as outFile:
     template = Template(open(sourceFile).read())
     outFile.write(template.substitute(mapping))
 
@@ -126,10 +126,10 @@ def c_template_builder(
 # #. For each port/pin, write a replaced template.
 def genConfigFromTemplate(templateFileName, destFileName):
   # Read in the template.
-  with open(templateFileName, "r", encoding='utf-8', newline='') as templateFile:
+  with open(templateFileName, "r") as templateFile:
     template = Template(templateFile.read())
   # Open the output file.
-  with open(destFileName, "w", encoding='utf-8', newline='') as outFile:
+  with open(destFileName, "w") as outFile:
     # Write the header
     outFile.write(c_license_header)
     outFile.write('/// \\brief Define GPIO configuration macros for all pins of a device.\n' +
@@ -166,10 +166,10 @@ def splitProcessorNames(port_dict):
 def genTablesFromTemplate(csvFileName, destFileName):
   portlist = enumeratePic24Ports()
   # Read in the CSV containing device information.
-  with open(csvFileName, "r", encoding='utf-8') as csvFile:
+  with open(csvFileName, "r") as csvFile:
     csv_dict_reader = csv.DictReader(csvFile).__iter__()
     # Open the output file.
-    with open(destFileName, "w", encoding='utf-8', newline='') as outFile:
+    with open(destFileName, "w") as outFile:
       # Write the header
       outFile.write(c_license_header)
       outFile.write('/// \\brief Define device-specific mappings from Rxy to RPy, ANn, and CNm pins.\n\n#if 0\n')
@@ -177,9 +177,9 @@ def genTablesFromTemplate(csvFileName, destFileName):
       while True:
           # Read three rows
           try:
-              RPy = csv_dict_reader.__next__()
-              ANn = csv_dict_reader.__next__()
-              CNm = csv_dict_reader.__next__()
+              RPy = csv_dict_reader.next()
+              ANn = csv_dict_reader.next()
+              CNm = csv_dict_reader.next()
           except StopIteration:
               break
           # Gather processor information. Make sure all three rows refer to the same processors and to the expected ports.
