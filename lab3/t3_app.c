@@ -12,11 +12,11 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
             outString("SW1 Pressed");
         }
 
-        if ( esos_uiF14_getSw2Pressed()){
+        if ( esos_uiF14_getSW2Pressed()){
             outString("SW2 Pressed");
         }
 
-        if ( esos_uiF14_getSw3Pressed()){
+        if ( esos_uiF14_getSW3Pressed()){
             outString("SW3 Pressed");
         }
 
