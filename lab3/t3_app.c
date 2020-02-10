@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include "esos.h"
 #include "esos_f14ui.h"
+#include "esos_f14ui.c"
 #include "revF14.h"
 #include "pic24_all.h"
 
@@ -35,13 +36,13 @@ ESOS_USER_TASK( LED2_state ){
 ESOS_USER_TASK( LED1_state){
     while ( TRUE ){
         if ( esos_uiF14_getSW3Pressed() ){
-            if ( esos_uiF14getSW2Pressed() ){
+            if ( esos_uiF14_getSW2Pressed() ){
                 esos_uiF14_turnLED1On();
             }
             else {
                 esos_uiF14_turnLED1Off();
             }
-            if ( esos_uiF14_SW2DoublePressed() ){
+            if ( esos_uiF14_getSW2DoublePressed() ){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
@@ -54,7 +55,7 @@ ESOS_USER_TASK( LED1_state){
             else {
                 esos_uiF14_turnLED1Off();
             }
-            if (esos_uiF14_SW1DoublePressed() ){
+            if (esos_uiF14_getSW1DoublePressed() ){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
