@@ -140,9 +140,19 @@ int16_t esos_uiF14_getRPGVelocity_i16 (void);
                                                                       && esos_uiF14_isTurningCW() )
 #define ESOS_TASK_WAIT_UNTIL_UIF14_RPG_TURNS_FAST_CCW()       ESOS_TASK_WAIT_UNTIL( esos_uiF14_isTurningFast() \
                                                                       && esos_uiF14_isTurningCCW() )
-#define ESOS_TASK_WAIT_UNTIL_UIF14_RPG_MAKES_REV(y)           // not yet implemented
-#define ESOS_TASK_WAIT_UNTIL_UIF14_RPG_MAKES_CW_REV(y)        // not yet implemented
-#define ESOS_TASK_WAIT_UNTIL_UIF14_RPG_MAKES_CCW_REV(y)       // not yet implemented
+#define ESOS_TASK_WAIT_UNTIL_UIF14_RPG_MAKES_REV(y)           { \
+  int16_t temp_counter = esos_uiF14_getRPGValue_u16(); \
+  ESOS_TASK_WAIT_UNTIL((esos_uiF14_getRPGCounter() == temp_counter + (y*12)) || (esos_uiF14_getRPGCounter() == temp_counter - (y*12)));  \ 
+}
+
+#define ESOS_TASK_WAIT_UNTIL_UIF14_RPG_MAKES_CW_REV(y)        { \
+  int16_t temp_counter = esos_uiF14_getRPGValue_u16(); \
+  ESOS_TASK_WAIT_UNTIL(esos_uiF14_getRPGCounter() == temp_counter + (y*12)); \
+}
+#define ESOS_TASK_WAIT_UNTIL_UIF14_RPG_MAKES_CCW_REV(y)       { \
+  int16_t temp_counter = esos_uiF14_getRPGValue_u16(); \
+  ESOS_TASK_WAIT_UNTIL(esos_uiF14_getRPGCounter() == temp_counter - (y*12)); \
+}
 
 #endif    // ESOS_UIF14_H
 

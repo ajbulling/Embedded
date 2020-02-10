@@ -92,6 +92,10 @@ inline void esos_uiF14_toggleLED1 (void) {
 
 inline void esos_uiF14_flashLED1( uint16_t u16_period) {
     _st_esos_uiF14Data.u16_LED1FlashPeriod = u16_period;
+    esos_uiF14_turnLED1On();
+    sleep(u16_period / 2);
+    esos_uiF14_turnLED1Off();
+    sleep(u16_period / 2);
     return;
 }
 
@@ -122,6 +126,10 @@ inline void esos_uiF14_toggleLED2 (void) {
 
 inline void esos_uiF14_flashLED2( uint16_t u16_period) {
     _st_esos_uiF14Data.u16_LED2FlashPeriod = u16_period;
+    esos_uiF14_turnLED2On();
+    sleep(u16_period / 2);
+    esos_uiF14_turnLED2Off();
+    sleep(u16_period / 2);
     return;
 }
 
@@ -151,6 +159,10 @@ inline void esos_uiF14_toggleLED3 (void) {
 
 inline void esos_uiF14_flashLED3( uint16_t u16_period) {
     _st_esos_uiF14Data.u16_LED1FlashPeriod = u16_period;
+    esos_uiF14_turnLED3On();
+    sleep(u16_period / 2);
+    esos_uiF14_turnLED3Off();
+    sleep(u16_period / 2);
     return;
 }
 
