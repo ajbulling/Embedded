@@ -77,16 +77,19 @@ inline bool esos_uiF14_isLED1Off (void) {
 
 inline void esos_uiF14_turnLED1On (void) {
     _st_esos_uiF14Data.b_LED1On = TRUE;
+    LED1_ON();
     return;
 }
 
 inline void esos_uiF14_turnLED1Off (void) {
     _st_esos_uiF14Data.b_LED1On = FALSE;
+    LED1_OFF();
     return;
 }
 
 inline void esos_uiF14_toggleLED1 (void) {
     _st_esos_uiF14Data.b_LED1On ^= 1;
+    LED1_HB_TOGGLE();
     return;
 }
 
@@ -111,16 +114,19 @@ inline bool esos_uiF14_isLED2Off (void) {
 
 inline void esos_uiF14_turnLED2On (void) {
     _st_esos_uiF14Data.b_LED2On = TRUE;
+    LED2_ON();
     return;
 }
 
 inline void esos_uiF14_turnLED2Off (void) {
     _st_esos_uiF14Data.b_LED2On = FALSE;
+    LED2_OFF();
     return;
 }
 
 inline void esos_uiF14_toggleLED2 (void) {
     _st_esos_uiF14Data.b_LED2On ^= 1;
+    LED2_HB_TOGGLE();
     return;
 }
 
@@ -144,16 +150,19 @@ inline bool esos_uiF14_isLED3Off (void) {
 
 inline void esos_uiF14_turnLED3On (void) {
     _st_esos_uiF14Data.b_LED3On = TRUE;
+    LED3_HB_ON();
     return;
 }
 
 inline void esos_uiF14_turnLED3Off (void) {
     _st_esos_uiF14Data.b_LED3On = FALSE;
+    LED3_HB_OFF();
     return;
 }
 
 inline void esos_uiF14_toggleLED3 (void) {
     _st_esos_uiF14Data.b_LED3On ^= 1;
+    LED3_HB_TOGGLE();
     return;
 }
 
@@ -256,6 +265,4 @@ ESOS_USER_TASK( __uiF14_task ){
   }
   ESOS_TASK_END();
 }
-
-//void user_init() {}
 
