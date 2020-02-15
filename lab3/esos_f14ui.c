@@ -27,6 +27,7 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 
 //SW1
 inline bool esos_uiF14_getSW1Pressed (void) {
+    if (SW1_PRESSED) _st_esos_uiF14Data.b_SW1Pressed = true;
     return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
 }
 

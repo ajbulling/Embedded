@@ -126,6 +126,7 @@ ESOS_USER_TASK( LED1_state){
 }
 
 void user_init() {
+/*
     // Configgure LED hardware
     LED1_CONFIG();
     LED2_CONFIG();
@@ -135,6 +136,8 @@ void user_init() {
     SW1_CONFIG();
     SW2_CONFIG();
     SW3_CONFIG();
+*/
+    config_esos_uiF14();
 
     // Start ESOS tasks
     esos_RegisterTask( LED3_blink );
