@@ -30,7 +30,7 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 inline bool esos_uiF14_checkHW (void) {
     if (SW1_PRESSED) _st_esos_uiF14Data.b_SW1Pressed = true;
     if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
-    //if (SW1_DOUBLEPRESSED) _st_esos_uiF14Data.b_SW1DoublePressed = true;
+    if (SW1_DOUBLEPRESSED) _st_esos_uiF14Data.b_SW1DoublePressed = true;
 
     if (SW2_PRESSED) _st_esos_uiF14Data.b_SW2Pressed = true;
     if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
@@ -268,6 +268,9 @@ void config_esos_uiF14() {
   // Configure rotary encoder
   CONFIG_RPGA();
   CONFIG_RPGB();
+
+  // Set RPG counter to 0
+  _esos_uiF14_setRPGCounter(0);
 
   esos_RegisterTask( __uiF14_task );
 }
