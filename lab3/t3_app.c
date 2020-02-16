@@ -8,7 +8,7 @@
 
 ESOS_USER_TASK ( CHECK_HW ){
     while ( true ){
-
+        esos_uiF14_checkHW();
     }
 }
 
@@ -149,4 +149,6 @@ void user_init() {
     esos_RegisterTask( LED3_blink );
     esos_RegisterTask( LED2_state );
     esos_RegisterTask( LED1_state );
+    esos_RegisterTask( CHECK_HW );
+    esos_RegisterTask( SERIAL_PRINT );
 }
