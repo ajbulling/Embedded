@@ -6,29 +6,35 @@
 #include "revF14.h"
 #include "pic24_all.h"
 
+ESOS_USER_TASK ( CHECK_HW ){
+    while ( true ){
+
+    }
+}
+
 ESOS_USER_TASK ( SERIAL_PRINT ){
     while( TRUE ){
-        if ( esos_uiF14_getSW1Pressed()){
+        if ( esos_uiF14_isSW1Pressed()){
             outString("SW1 Pressed");
         }
 
-        if ( esos_uiF14_getSW2Pressed()){
+        if ( esos_uiF14_isSW2Pressed()){
             outString("SW2 Pressed");
         }
 
-        if ( esos_uiF14_getSW3Pressed()){
+        if ( esos_uiF14_isSW3Pressed()){
             outString("SW3 Pressed");
         }
 
-        if ( esos_uiF14_getSW1DoublePressed()){
+        if ( esos_uiF14_isSW1DoublePressed()){
             outString("SW1 Double Pressed");
         }
 
-        if ( esos_uiF14_getSW2DoublePressed()){
+        if ( esos_uiF14_isSW2DoublePressed()){
             outString("SW2 Double Pressed");
         }
 
-        if ( esos_uiF14_getSW3DoublePressed()){
+        if ( esos_uiF14_isSW3DoublePressed()){
             outString("SW3 Double Pressed");
         }
 
@@ -96,27 +102,27 @@ ESOS_USER_TASK( LED2_state ){
 
 ESOS_USER_TASK( LED1_state){
     while ( TRUE ){
-        if ( esos_uiF14_getSW3Pressed() ){
-            if ( esos_uiF14_getSW2Pressed() ){
+        if ( esos_uiF14_isSW3Pressed() ){
+            if ( esos_uiF14_isSW2Pressed() ){
                 esos_uiF14_turnLED1On();
             }
             else {
                 esos_uiF14_turnLED1Off();
             }
-            if ( esos_uiF14_getSW2DoublePressed() ){
+            if ( esos_uiF14_isSW2DoublePressed() ){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
             }
         }
         else {
-            if ( esos_uiF14_getSW1Pressed() ){
+            if ( esos_uiF14_isSW1Pressed() ){
                 esos_uiF14_turnLED1On();
             }
             else {
                 esos_uiF14_turnLED1Off();
             }
-            if (esos_uiF14_getSW1DoublePressed() ){
+            if (esos_uiF14_isSW1DoublePressed() ){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
@@ -127,7 +133,7 @@ ESOS_USER_TASK( LED1_state){
 
 void user_init() {
 /*
-    // Configgure LED hardware
+    // Configure LED hardware
     LED1_CONFIG();
     LED2_CONFIG();
     LED3_HB_CONFIG();

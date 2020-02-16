@@ -14,6 +14,7 @@
 
 // PRIVATE FUNCTIONS
 inline void _esos_uiF14_setRPGCounter (uint16_t newValue) {
+    _st_esos_uiF14Data.u16_lastRPGCounter = _st_esos_uiF14Data.u16_RPGCounter;
     _st_esos_uiF14Data.u16_RPGCounter = newValue;
     return;
 }
@@ -25,43 +26,58 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 
 // PUBLIC SWITCH FUNCTIONS
 
-//SW1
-inline bool esos_uiF14_getSW1Pressed (void) {
+// Check hardware
+inline bool esos_uiF14_checkHW (void) {
     if (SW1_PRESSED) _st_esos_uiF14Data.b_SW1Pressed = true;
+    if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
+    //if (SW1_DOUBLEPRESSED) _st_esos_uiF14Data.b_SW1DoublePressed = true;
+
+    if (SW2_PRESSED) _st_esos_uiF14Data.b_SW2Pressed = true;
+    if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
+
+    if (SW3_PRESSED) _st_esos_uiF14Data.b_SW3Pressed = true;
+    if (SW3_RELEASED) _st_esos_uiF14Data.b_SW3Pressed = false;
+
+    if (RPG_TURN_CW()) _esos_uiF14_setRPGCounter(_st_esos_uiF14Data.u16_RPGCounter + 1);
+    if (RPG_TURN_CCW()) _esos_uiF14_setRPGCounter(_st_esos_uiF14Data.u16_RPGCounter - 1);
+}
+
+//SW1
+inline bool esos_uiF14_isSW1Pressed (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
 }
 
-inline bool esos_uiF14_getSW1Released (void) {
+inline bool esos_uiF14_isSW1Released (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==FALSE);
 }
 
-inline bool esos_uiF14_getSW1DoublePressed (void) {
+inline bool esos_uiF14_isSW1DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW1DoublePressed==TRUE);
 }
 
 //SW2
-inline bool esos_uiF14_getSW2Pressed (void) {
+inline bool esos_uiF14_isSW2Pressed (void) {
     return (_st_esos_uiF14Data.b_SW2Pressed==TRUE);
 }
 
-inline bool esos_uiF14_getSW2Released (void) {
+inline bool esos_uiF14_isSW2Released (void) {
     return (_st_esos_uiF14Data.b_SW2Pressed==FALSE);
 }
 
-inline bool esos_uiF14_getSW2DoublePressed (void) {
+inline bool esos_uiF14_isSW2DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW2DoublePressed==TRUE);
 }
 
 //SW3
-inline bool esos_uiF14_getSW3Pressed (void) {
+inline bool esos_uiF14_isSW3Pressed (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
 }
 
-inline bool esos_uiF14_getSW3Released (void) {
+inline bool esos_uiF14_isSW3Released (void) {
     return (_st_esos_uiF14Data.b_SW1Pressed==FALSE);
 }
 
-inline bool esos_uiF14_getSW3DoublePressed (void) {
+inline bool esos_uiF14_isSW3DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW1DoublePressed==TRUE);
 }
 

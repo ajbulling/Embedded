@@ -38,6 +38,10 @@ For Microchip dsPIC33EP512GP806
 #define SW1 (_RB13)
 #define SW1_RELEASED (_RB13 == 1)
 #define SW1_PRESSED (_RB13 == 0)
+#define SW1_DOUBLEPRESSED { \
+    if (SW1_PRESSED) { \
+        ; \
+    }
 
 // Configure SW2
 #define SW2_CONFIG() CONFIG_RB12_AS_DIG_INPUT();

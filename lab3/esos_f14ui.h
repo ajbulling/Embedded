@@ -56,6 +56,8 @@ ESOS_USER_TASK(__uiF14_task);
 
 // PUBLIC API FUNCTION PROTOTYPES
 
+inline bool esos_uiF14_checkHW (void);
+
 inline bool esos_uiF14_isSW1Pressed (void);
 inline bool esos_uiF14_isSW1Released (void);
 inline bool esos_uiF14_isSW1DoublePressed (void);
