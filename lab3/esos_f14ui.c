@@ -41,7 +41,8 @@ inline bool esos_uiF14_checkHW (void) {
             esos_RegisterTimer(doublePressedTimer, 200);
         }
         else {
-            esos_UnregisterTimer(doublePressedTimer);
+            ESOS_TMR_HANDLE esos_timer_handle = esos_GetTimerHandle(doublePressedTimer);
+            esos_UnregisterTimer(esos_timer_handle);
             _st_esos_uiF14Data.b_SW1DoublePressed = true;
             _st_esos_uiF14Data.b_SW1Pressed = false;
         }
@@ -56,11 +57,13 @@ inline bool esos_uiF14_checkHW (void) {
             esos_RegisterTimer(doublePressedTimer, 200);
         }
         else {
-            esos_UnregisterTimer(doublePressedTimer);
+            ESOS_TMR_HANDLE esos_timer_handle = esos_GetTimerHandle(doublePressedTimer);
+            esos_UnregisterTimer(esos_timer_handle);
             _st_esos_uiF14Data.b_SW2DoublePressed = true;
             _st_esos_uiF14Data.b_SW2Pressed = false;
-        }
+        }   
     }
+    
     if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
 
     if (SW3_PRESSED) _st_esos_uiF14Data.b_SW3Pressed = true;
