@@ -302,14 +302,5 @@ ESOS_USER_TASK( __uiF14_task ){
 }
 
 // timer for checking if double pressed
-ESOS_USER_TASK( DOUBLE_PRESSED_TIMER ){
 
-    ESOS_TASK_BEGIN();
-    timer_on = 1;
-    //timer_set(&timer, dptime);
-    //ESOS_TASK_WAIT_UNTIL(timer_expired(&timer));
-    //timer_on = 0;
-    ESOS_TASK_YIELD();
-    ESOS_TASK_END();
-}
 
