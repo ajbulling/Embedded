@@ -33,10 +33,34 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 
 // Check hardware
 inline bool esos_uiF14_checkHW (void) {
-    if (SW1_PRESSED) _st_esos_uiF14Data.b_SW1Pressed = true;
+    if (SW1_PRESSED) {
+        if (timer_on != 1) {
+            _st_esos_uiF14Data.b_SW1Pressed = true;
+            _st_esos_uiF14Data.b_SW1DoublePressed = false;
+            timer_on = 1;
+            esos_RegisterTimer(doublePressedTimer, 200);
+        }
+        else {
+            esos_UnregisterTimer(doublePressedTimer);
+            _st_esos_uiF14Data.b_SW1DoublePressed = true;
+            _st_esos_uiF14Data.b_SW1Pressed = false;
+        }
+    }
     if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
 
-    if (SW2_PRESSED) _st_esos_uiF14Data.b_SW2Pressed = true;
+    if (SW2_PRESSED) {
+        if (timer_on != 1) {
+            _st_esos_uiF14Data.b_SW2Pressed = true;
+            _st_esos_uiF14Data.b_SW2DoublePressed = false;
+            timer_on = 1;
+            esos_RegisterTimer(doublePressedTimer, 200);
+        }
+        else {
+            esos_UnregisterTimer(doublePressedTimer);
+            _st_esos_uiF14Data.b_SW2DoublePressed = true;
+            _st_esos_uiF14Data.b_SW2Pressed = false;
+        }
+    }
     if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
 
     if (SW3_PRESSED) _st_esos_uiF14Data.b_SW3Pressed = true;
@@ -302,5 +326,7 @@ ESOS_USER_TASK( __uiF14_task ){
 }
 
 // timer for checking if double pressed
-
+ESOS_USER_TIMER( doublePressedTimer ){
+    timer_on = 0;
+}
 
