@@ -33,40 +33,10 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 
 // Check hardware
 inline bool esos_uiF14_checkHW (void) {
-    if (SW1_PRESSED) {
-        //if the double pressed timer is not running, set single pressed
-        if (timer_on != 1) {
-            esos_RegisterTask(DOUBLE_PRESSED_TIMER);
-            _st_esos_uiF14Data.b_SW1Pressed = true;
-            _st_esos_uiF14Data.b_SW1DoublePressed = false;
-        }
-        //if double pressed timer is running, set double pressed true
-        else {
-            esos_UnregisterTask(DOUBLE_PRESSED_TIMER);
-            _st_esos_uiF14Data.b_SW1DoublePressed = true;
-            _st_esos_uiF14Data.b_SW1Pressed = false;
-        }
-
-    } 
+    if (SW1_PRESSED) _st_esos_uiF14Data.b_SW1Pressed = true;
     if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
-    //if (SW1_DOUBLEPRESSED) _st_esos_uiF14Data.b_SW1DoublePressed = true;
 
-    if (SW2_PRESSED) {
-        //if the double pressed timer is not running, set single pressed
-        if (timer_on != 1) {
-            esos_RegisterTask(DOUBLE_PRESSED_TIMER);
-            _st_esos_uiF14Data.b_SW2Pressed = true;
-            _st_esos_uiF14Data.b_SW2DoublePressed = false;
-        }
-        //if double pressed timer is running, set double pressed true
-        else {
-            esos_UnregisterTask(DOUBLE_PRESSED_TIMER);
-            _st_esos_uiF14Data.b_SW2DoublePressed = true;
-            _st_esos_uiF14Data.b_SW2Pressed = false;
-        }
-
-    }
-
+    if (SW2_PRESSED) _st_esos_uiF14Data.b_SW2Pressed = true;
     if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
 
     if (SW3_PRESSED) _st_esos_uiF14Data.b_SW3Pressed = true;
