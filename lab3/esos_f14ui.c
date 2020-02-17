@@ -13,7 +13,8 @@
 #include "pic24_all.h"
 
 int dptime = 100;
-timer_on = 0;
+int timer;
+int timer_on = 0;
 
 // PRIVATE FUNCTIONS
 // Update RPG counter
@@ -35,12 +36,13 @@ inline bool esos_uiF14_checkHW (void) {
     if (SW1_PRESSED) {
         //if the double pressed timer is not running, set single pressed
         if (timer_on != 1) {
-            DOUBLE_PRESSED_TIMER();
+            esos_RegisterTask(DOUBLE_PRESSED_TIMER);
             _st_esos_uiF14Data.b_SW1Pressed = true;
             _st_esos_uiF14Data.b_SW1DoublePressed = false;
         }
         //if double pressed timer is running, set double pressed true
         else {
+            esos_UnregisterTask(DOUBLE_PRESSED_TIMER);
             _st_esos_uiF14Data.b_SW1DoublePressed = true;
             _st_esos_uiF14Data.b_SW1Pressed = false;
         }
@@ -52,11 +54,13 @@ inline bool esos_uiF14_checkHW (void) {
     if (SW2_PRESSED) {
         //if the double pressed timer is not running, set single pressed
         if (timer_on != 1) {
-            DOUBLE_PRESSED_TIMER();
+            esos_RegisterTask(DOUBLE_PRESSED_TIMER);
             _st_esos_uiF14Data.b_SW2Pressed = true;
+            _st_esos_uiF14Data.b_SW2DoublePressed = false;
         }
         //if double pressed timer is running, set double pressed true
         else {
+            esos_UnregisterTask(DOUBLE_PRESSED_TIMER);
             _st_esos_uiF14Data.b_SW2DoublePressed = true;
             _st_esos_uiF14Data.b_SW2Pressed = false;
         }
@@ -331,8 +335,8 @@ ESOS_USER_TASK( DOUBLE_PRESSED_TIMER ){
 
     ESOS_TASK_BEGIN();
     timer_on = 1;
-    timer_set(&timer, dptime);
-    ESOS_TASK_WAIT_UNTIL(timer_expired(&timer));
+    //timer_set(&timer, dptime);
+    //ESOS_TASK_WAIT_UNTIL(timer_expired(&timer));
     timer_on = 0;
     ESOS_TASK_END();
 }

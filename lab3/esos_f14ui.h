@@ -53,6 +53,7 @@ uint16_t esos_uiF14_getLastRPGCounter (void);
 void esos_ui_setLastRPGCounter (uint16_t);
 
 ESOS_USER_TASK(__uiF14_task);
+ESOS_USER_TASK(DOUBLE_PRESSED_TIMER);
 
 // PUBLIC API FUNCTION PROTOTYPES
 
