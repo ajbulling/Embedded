@@ -7,12 +7,16 @@
 #include "pic24_all.h"
 
 ESOS_USER_TASK ( CHECK_HW ){
+    ESOS_TASK_BEGIN();
     while ( true ){
         esos_uiF14_checkHW();
+        ESOS_TASK_YIELD();
     }
+    ESOS_TASK_END();
 }
 
 ESOS_USER_TASK ( SERIAL_PRINT ){
+    ESOS_TASK_BEGIN();
     while( TRUE ){
         if ( esos_uiF14_isSW1Pressed()){
             outString("SW1 Pressed");
@@ -70,19 +74,22 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
                 }
             }
         }
+        ESOS_TASK_YIELD();
     }
+    ESOS_TASK_END();
 }
 
 ESOS_USER_TASK( LED3_blink ){
     ESOS_TASK_BEGIN();
     while ( TRUE ){
-        esos_uiF14_toggleLED3();
-        ESOS_TASK_WAIT_TICKS(500);
+        esos_uiF14_flashLED3(250);
+        ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
 }
 
 ESOS_USER_TASK( LED2_state ){
+    ESOS_TASK_BEGIN();
     while ( TRUE ){
         if ( esos_uiF14_getRpgVelocity_i16() == 0){
 	    esos_uiF14_turnLED2Off();
@@ -100,10 +107,13 @@ ESOS_USER_TASK( LED2_state ){
                 esos_uiF14_flashLED2(100);
 	    }
         }
+        ESOS_TASK_YIELD();
     }
+    ESOS_TASK_END();
 }
 
 ESOS_USER_TASK( LED1_state){
+    ESOS_TASK_BEGIN();
     while ( TRUE ){
         if ( esos_uiF14_isSW3Pressed() ){
             if ( esos_uiF14_isSW2Pressed() ){
@@ -133,7 +143,9 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_SW1DoublePressedExpired();
             }
         }
+        ESOS_TASK_YIELD();
     }
+    ESOS_TASK_END();
 }
 
 void user_init() {

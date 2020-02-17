@@ -104,15 +104,15 @@ inline bool esos_uiF14_isSW2DoublePressed (void) {
 
 //SW3
 inline bool esos_uiF14_isSW3Pressed (void) {
-    return (_st_esos_uiF14Data.b_SW1Pressed==TRUE);
+    return (_st_esos_uiF14Data.b_SW3Pressed==TRUE);
 }
 
 inline bool esos_uiF14_isSW3Released (void) {
-    return (_st_esos_uiF14Data.b_SW1Pressed==FALSE);
+    return (_st_esos_uiF14Data.b_SW3Pressed==FALSE);
 }
 
 inline bool esos_uiF14_isSW3DoublePressed (void) {
-    return (_st_esos_uiF14Data.b_SW1DoublePressed==TRUE);
+    return (_st_esos_uiF14Data.b_SW3DoublePressed==TRUE);
 }
 
 inline void esos_uiF14_SW1DoublePressedExpired (void) {
@@ -121,7 +121,7 @@ inline void esos_uiF14_SW1DoublePressedExpired (void) {
 }
 
 inline void esos_uiF14_SW2DoublePressedExpired (void) {
-    _st_esos_uiF14Data.b_SW1DoublePressed = false;
+    _st_esos_uiF14Data.b_SW2DoublePressed = false;
     return;
 }
 
@@ -274,7 +274,7 @@ inline bool esos_uiF14_isRpgTurning ( void ) {
 }
 
 inline bool esos_uiF14_isRpgTurningSlow( void ) {
-    return (abs(esos_uiF14_getRpgVelocity_i16()) <= 5);
+    return (abs(esos_uiF14_getRpgVelocity_i16()) <= 5 && abs(esos_uiF14_getRpgVelocity_i16()) > 0);
 }
 
 inline bool esos_uiF14_isRpgTurningMedium( void ) {
@@ -326,6 +326,7 @@ ESOS_USER_TASK( __uiF14_task ){
   while(TRUE) {
     // do your UI stuff here
     ESOS_TASK_WAIT_TICKS( __ESOS_UIF14_UI_PERIOD_MS );
+    ESOS_TASK_YIELD();
   }
   ESOS_TASK_END();
 }
@@ -337,7 +338,8 @@ ESOS_USER_TASK( DOUBLE_PRESSED_TIMER ){
     timer_on = 1;
     //timer_set(&timer, dptime);
     //ESOS_TASK_WAIT_UNTIL(timer_expired(&timer));
-    timer_on = 0;
+    //timer_on = 0;
+    ESOS_TASK_YIELD();
     ESOS_TASK_END();
 }
 
