@@ -12,7 +12,11 @@
 #include "revF14.h"
 #include "pic24_all.h"
 
+int dptime = 100;
+timer_on = 0;
+
 // PRIVATE FUNCTIONS
+// Update RPG counter
 inline void _esos_uiF14_setRPGCounter (uint16_t newValue) {
     _st_esos_uiF14Data.u16_lastRPGCounter = _st_esos_uiF14Data.u16_RPGCounter;
     _st_esos_uiF14Data.u16_RPGCounter = newValue;
@@ -28,11 +32,37 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 
 // Check hardware
 inline bool esos_uiF14_checkHW (void) {
-    if (SW1_PRESSED) _st_esos_uiF14Data.b_SW1Pressed = true;
-    if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
-    if (SW1_DOUBLEPRESSED) _st_esos_uiF14Data.b_SW1DoublePressed = true;
+    if (SW1_PRESSED) {
+        //if the double pressed timer is not running, set single pressed
+        if (timer_on != 1) {
+            DOUBLE_PRESSED_TIMER();
+            _st_esos_uiF14Data.b_SW1Pressed = true;
+            _st_esos_uiF14Data.b_SW1DoublePressed = false;
+        }
+        //if double pressed timer is running, set double pressed true
+        else {
+            _st_esos_uiF14Data.b_SW1DoublePressed = true;
+            _st_esos_uiF14Data.b_SW1Pressed = false;
+        }
 
-    if (SW2_PRESSED) _st_esos_uiF14Data.b_SW2Pressed = true;
+    } 
+    if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
+    //if (SW1_DOUBLEPRESSED) _st_esos_uiF14Data.b_SW1DoublePressed = true;
+
+    if (SW2_PRESSED) {
+        //if the double pressed timer is not running, set single pressed
+        if (timer_on != 1) {
+            DOUBLE_PRESSED_TIMER();
+            _st_esos_uiF14Data.b_SW2Pressed = true;
+        }
+        //if double pressed timer is running, set double pressed true
+        else {
+            _st_esos_uiF14Data.b_SW2DoublePressed = true;
+            _st_esos_uiF14Data.b_SW2Pressed = false;
+        }
+
+    }
+
     if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
 
     if (SW3_PRESSED) _st_esos_uiF14Data.b_SW3Pressed = true;
@@ -79,6 +109,16 @@ inline bool esos_uiF14_isSW3Released (void) {
 
 inline bool esos_uiF14_isSW3DoublePressed (void) {
     return (_st_esos_uiF14Data.b_SW1DoublePressed==TRUE);
+}
+
+inline void esos_uiF14_SW1DoublePressedExpired (void) {
+    _st_esos_uiF14Data.b_SW1DoublePressed = false;
+    return;
+}
+
+inline void esos_uiF14_SW2DoublePressedExpired (void) {
+    _st_esos_uiF14Data.b_SW1DoublePressed = false;
+    return;
 }
 
 // PUBLIC LED FUNCTIONS
@@ -284,5 +324,16 @@ ESOS_USER_TASK( __uiF14_task ){
     ESOS_TASK_WAIT_TICKS( __ESOS_UIF14_UI_PERIOD_MS );
   }
   ESOS_TASK_END();
+}
+
+// timer for checking if double pressed
+ESOS_USER_TASK( DOUBLE_PRESSED_TIMER ){
+
+    ESOS_TASK_BEGIN();
+    timer_on = 1;
+    timer_set(&timer, dptime);
+    ESOS_TASK_WAIT_UNTIL(timer_expired(&timer));
+    timer_on = 0;
+    ESOS_TASK_END();
 }
 

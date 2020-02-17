@@ -113,6 +113,7 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
+                esos_uiF14_SW2DoublePressedExpired();
             }
         }
         else {
@@ -126,6 +127,7 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
+                esos_uiF14_SW1DoublePressedExpired();
             }
         }
     }
