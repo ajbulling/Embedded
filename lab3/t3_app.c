@@ -74,9 +74,12 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
 }
 
 ESOS_USER_TASK( LED3_blink ){
+    ESOS_TASK_BEGIN();
     while ( TRUE ){
-        esos_uiF14_flashLED3(500);
+        esos_uiF14_toggleLED3();
+        ESOS_TASK_WAIT_TICKS(500);
     }
+    ESOS_TASK_END();
 }
 
 ESOS_USER_TASK( LED2_state ){
