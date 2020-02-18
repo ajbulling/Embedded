@@ -12,9 +12,8 @@
 #include "revF14.h"
 #include "pic24_all.h"
 
-int dptime = 100;
-int timer;
 int timer_on = 0;
+ESOS_TMR_HANDLE esos_timer_handle_1, esos_timer_handle_2;
 
 // PRIVATE FUNCTIONS
 // Update RPG counter
@@ -34,14 +33,14 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 // Check hardware
 inline bool esos_uiF14_checkHW (void) {
     if (SW1_PRESSED) {
+        DELAY_MS(10);
         if (timer_on != 1) {
             _st_esos_uiF14Data.b_SW1Pressed = true;
             _st_esos_uiF14Data.b_SW1DoublePressed = false;
             timer_on = 1;
-            esos_RegisterTimer(doublePressedTimer, 200);
+            esos_timer_handle_1 = esos_RegisterTimer(doublePressedTimer, 200);
         }
         else {
-            ESOS_TMR_HANDLE esos_timer_handle_1 = esos_GetTimerHandle(doublePressedTimer);
             esos_UnregisterTimer(esos_timer_handle_1);
             _st_esos_uiF14Data.b_SW1DoublePressed = true;
             _st_esos_uiF14Data.b_SW1Pressed = false;
@@ -50,18 +49,19 @@ inline bool esos_uiF14_checkHW (void) {
     if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
 
     if (SW2_PRESSED) {
+        DELAY_MS(10);
         if (timer_on != 1) {
             _st_esos_uiF14Data.b_SW2Pressed = true;
             _st_esos_uiF14Data.b_SW2DoublePressed = false;
             timer_on = 1;
-            esos_RegisterTimer(doublePressedTimer, 200);
+            esos_timer_handle_2 = esos_RegisterTimer(doublePressedTimer, 200);
         }
         else {
-            ESOS_TMR_HANDLE esos_timer_handle_2 = esos_GetTimerHandle(doublePressedTimer);
             esos_UnregisterTimer(esos_timer_handle_2);
             _st_esos_uiF14Data.b_SW2DoublePressed = true;
             _st_esos_uiF14Data.b_SW2Pressed = false;
-        }   
+        }
+
     }
     if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
 
