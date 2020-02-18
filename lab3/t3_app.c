@@ -18,59 +18,59 @@ ESOS_USER_TASK ( CHECK_HW ){
 ESOS_USER_TASK ( SERIAL_PRINT ){
     ESOS_TASK_BEGIN();
     while( TRUE ){
-        if ( esos_uiF14_isSW1Pressed()){
-            outString("SW1 Pressed");
+        if ( esos_uiF14_isSW1Pressed() ){
+            outString("SW1 Pressed\n");
         }
 
-        if ( esos_uiF14_isSW2Pressed()){
-            outString("SW2 Pressed");
+        if ( esos_uiF14_isSW2Pressed() ){
+            outString("SW2 Pressed\n");
         }
 
-        if ( esos_uiF14_isSW3Pressed()){
-            outString("SW3 Pressed");
+        if ( esos_uiF14_isSW3Pressed() ){
+            outString("SW3 Pressed\n");
         }
 
-        if ( esos_uiF14_isSW1DoublePressed()){
-            outString("SW1 Double Pressed");
+        if ( esos_uiF14_isSW1DoublePressed() ){
+            outString("SW1 Double Pressed\n");
         }
 
-        if ( esos_uiF14_isSW2DoublePressed()){
-            outString("SW2 Double Pressed");
+        if ( esos_uiF14_isSW2DoublePressed() ){
+            outString("SW2 Double Pressed\n");
         }
 
-        if ( esos_uiF14_isSW3DoublePressed()){
-            outString("SW3 Double Pressed");
+        if ( esos_uiF14_isSW3DoublePressed() ){
+            outString("SW3 Double Pressed\n");
         }
 
-        if ( esos_uiF14_isRpgTurning()) {
-            outString("RPG is turning");
-            if ( esos_uiF14_isRpgTurningSlow()){
-                if ( esos_uiF14_isRpgTurningCW()) {
-                    outString("RPG is turning CW slow");
+        if ( esos_uiF14_isRpgTurning() ) {
+            outString("RPG is turning\n");
+            if ( esos_uiF14_isRpgTurningSlow() ){
+                if ( esos_uiF14_isRpgTurningCW() ) {
+                    outString("RPG is turning CW slow\n");
                 }
 
-                if ( esos_uiF14_isRpgTurningCCW()) {
-                    outString("RPG is turning CCW slow");
-                }
-            }
-
-            if ( esos_uiF14_isRpgTurningMedium()){
-                if ( esos_uiF14_isRpgTurningCW()) {
-                    outString("RPG is turning CW medium");
-                }
-
-                if ( esos_uiF14_isRpgTurningCCW()) {
-                    outString("RPG is turning CCW medium");
+                if ( esos_uiF14_isRpgTurningCCW() ) {
+                    outString("RPG is turning CCW slow\n");
                 }
             }
 
-            if ( esos_uiF14_isRpgTurningFast()) {
-                if ( esos_uiF14_isRpgTurningCW()) {
-                    outString("RPG is turning CW fast");
+            if ( esos_uiF14_isRpgTurningMedium() ){
+                if ( esos_uiF14_isRpgTurningCW() ) {
+                    outString("RPG is turning CW medium\n");
                 }
 
-                if ( esos_uiF14_isRpgTurningCCW()) {
-                    outString("RPG is turning CCW fast");
+                if ( esos_uiF14_isRpgTurningCCW() ) {
+                    outString("RPG is turning CCW medium\n");
+                }
+            }
+
+            if ( esos_uiF14_isRpgTurningFast() ) {
+                if ( esos_uiF14_isRpgTurningCW() ) {
+                    outString("RPG is turning CW fast\n");
+                }
+
+                if ( esos_uiF14_isRpgTurningCCW() ) {
+                    outString("RPG is turning CCW fast\n");
                 }
             }
         }
@@ -92,20 +92,20 @@ ESOS_USER_TASK( LED2_state ){
     ESOS_TASK_BEGIN();
     while ( TRUE ){
         if ( esos_uiF14_getRpgVelocity_i16() == 0){
-	    esos_uiF14_turnLED2Off();
-	}
-        else if ( esos_uiF14_isRpgTurningSlow() ){
-	    esos_uiF14_turnLED2On();
-	}
-        else if ( esos_uiF14_isRpgTurningMedium() ){
-	    while ( esos_uiF14_isRpgTurningMedium() ){
-	        esos_uiF14_flashLED2(500);
-            }
-	}
-	else if ( esos_uiF14_isRpgTurningFast() ){
-	    while ( esos_uiF14_isRpgTurningFast() ){
-                esos_uiF14_flashLED2(100);
+	        esos_uiF14_turnLED2Off();
 	    }
+        else if ( esos_uiF14_isRpgTurningSlow() ){
+	        esos_uiF14_turnLED2On();
+	    }
+        else if ( esos_uiF14_isRpgTurningMedium() ){
+	        while ( esos_uiF14_isRpgTurningMedium() ){
+	            esos_uiF14_flashLED2(500);
+            }
+	    }
+	    else if ( esos_uiF14_isRpgTurningFast() ){
+	        while ( esos_uiF14_isRpgTurningFast() ){
+                esos_uiF14_flashLED2(100);
+	        }
         }
         ESOS_TASK_YIELD();
     }
@@ -126,6 +126,7 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
+                esos_uiF14_turnLED1Off();
                 esos_uiF14_SW2DoublePressedExpired();
             }
         }
@@ -140,6 +141,7 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
+                esos_uiF14_turnLED1Off();
                 esos_uiF14_SW1DoublePressedExpired();
             }
         }

@@ -42,6 +42,7 @@ inline bool esos_uiF14_checkHW (void) {
         }
         else {
             esos_UnregisterTimer(esos_timer_handle_1);
+            timer_on = 0;
             _st_esos_uiF14Data.b_SW1DoublePressed = true;
             _st_esos_uiF14Data.b_SW1Pressed = false;
         }
@@ -58,6 +59,7 @@ inline bool esos_uiF14_checkHW (void) {
         }
         else {
             esos_UnregisterTimer(esos_timer_handle_2);
+            timer_on = 0;
             _st_esos_uiF14Data.b_SW2DoublePressed = true;
             _st_esos_uiF14Data.b_SW2Pressed = false;
         }
