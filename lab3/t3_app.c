@@ -16,12 +16,13 @@ ESOS_USER_TASK ( CHECK_HW ){
     ESOS_TASK_END();
 }
 
-char* myString[20];
+uint8_t num;
 ESOS_USER_TASK ( SERIAL_READ ){
     ESOS_TASK_BEGIN();
     while (true) {
-        inString(myString, 20);
-        outString(myString + '\n');
+        ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+        ESOS_TASK_WAIT_ON_GET_UINT8(num);
+        outString("%i\n", num);
         ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
