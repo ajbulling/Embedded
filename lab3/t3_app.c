@@ -16,6 +16,17 @@ ESOS_USER_TASK ( CHECK_HW ){
     ESOS_TASK_END();
 }
 
+char* myString[20];
+ESOS_USER_TASK ( SERIAL_READ ){
+    ESOS_TASK_BEGIN();
+    while (true) {
+        inString(myString, 20);
+        outString(myString + '\n');
+        ESOS_TASK_YIELD();
+    }
+    ESOS_TASK_END();
+}
+
 ESOS_USER_TASK ( SERIAL_PRINT ){
     ESOS_TASK_BEGIN();
     while( TRUE ){
@@ -182,5 +193,6 @@ void user_init() {
     esos_RegisterTask( LED2_state );
     esos_RegisterTask( LED1_state );
     esos_RegisterTask( CHECK_HW );
-    esos_RegisterTask( SERIAL_PRINT );
+    //esos_RegisterTask( SERIAL_PRINT );
+    esos_RegisterTask( SERIAL_READ );
 }
