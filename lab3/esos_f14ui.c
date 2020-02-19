@@ -64,14 +64,16 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 // Check hardware
 inline bool esos_uiF14_checkHW (void) {
     if (SW1_PRESSED) {
-        DELAY_MS(10);
+        DELAY_MS(30);
         if (timer_on != 1) {
+            // Timer is not running, so it is a single press and the timer should be started
             _st_esos_uiF14Data.b_SW1Pressed = true;
             _st_esos_uiF14Data.b_SW1DoublePressed = false;
             timer_on = 1;
             esos_timer_handle_1 = esos_RegisterTimer(doublePressedTimer, 200);
         }
         else {
+            // Timer is already running, so it is a double press
             esos_UnregisterTimer(esos_timer_handle_1);
             timer_on = 0;
             _st_esos_uiF14Data.b_SW1DoublePressed = true;
@@ -81,7 +83,7 @@ inline bool esos_uiF14_checkHW (void) {
     if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
 
     if (SW2_PRESSED) {
-        DELAY_MS(10);
+        DELAY_MS(30);
         if (timer_on != 1) {
             _st_esos_uiF14Data.b_SW2Pressed = true;
             _st_esos_uiF14Data.b_SW2DoublePressed = false;
@@ -263,9 +265,9 @@ inline void esos_uiF14_toggleLED3 (void) {
 inline void esos_uiF14_flashLED3( uint16_t u16_period) {
     _st_esos_uiF14Data.u16_LED1FlashPeriod = u16_period;
     esos_uiF14_turnLED3On();
-    DELAY_MS(u16_period / 2);
+    DELAY_MS(u16_period);
     esos_uiF14_turnLED3Off();
-    DELAY_MS(u16_period / 2);
+    DELAY_MS(u16_period);
     return;
 }
 

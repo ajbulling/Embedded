@@ -131,21 +131,28 @@ ESOS_USER_TASK( LED1_state){
             }
             if ( esos_uiF14_isSW2DoublePressed() ){
                 esos_uiF14_flashLED1(50);
+                //ESOS_TASK_WAIT_TICKS(50);
                 esos_uiF14_flashLED1(50);
+                //ESOS_TASK_WAIT_TICKS(50);
                 esos_uiF14_flashLED1(50);
+                //ESOS_TASK_WAIT_TICKS(50);
             }
         }
         else {
             if ( esos_uiF14_isSW1Pressed() ){
+                outString("I SHOULD BE ON!!!!!!!!!!!!!");
                 esos_uiF14_turnLED1On();
             }
             else {
                 esos_uiF14_turnLED1Off();
             }
             if (esos_uiF14_isSW1DoublePressed() ){
-                esos_uiF14_flashLED1(500);
-                esos_uiF14_flashLED1(500);
-                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(50);
+                //ESOS_TASK_WAIT_TICKS(50);
+                esos_uiF14_flashLED1(50);
+                //ESOS_TASK_WAIT_TICKS(50);
+                esos_uiF14_flashLED1(50);
+                //ESOS_TASK_WAIT_TICKS(50);
             }
         }
         ESOS_TASK_YIELD();
