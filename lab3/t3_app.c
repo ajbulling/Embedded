@@ -22,7 +22,7 @@ ESOS_USER_TASK ( SERIAL_READ ){
     while (true) {
         ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
         ESOS_TASK_WAIT_ON_GET_UINT8(num);
-        outString("%i\n", num);
+        ESOS_TASK_WAIT_ON_SEND_STRING(num);
         ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
