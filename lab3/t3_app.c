@@ -48,31 +48,31 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
         if ( esos_uiF14_isRpgTurning() ) {
             outString("RPG is turning\n");
             if ( esos_uiF14_isRpgTurningSlow() ){
-                if ( esos_uiF14_isRpgTurningCW() ) {
+                if ( RPG_TURN_CW() ) {
                     outString("RPG is turning CW slow\n");
                 }
 
-                if ( esos_uiF14_isRpgTurningCCW() ) {
+                if ( RPG_TURN_CCW() ) {
                     outString("RPG is turning CCW slow\n");
                 }
             }
 
             if ( esos_uiF14_isRpgTurningMedium() ){
-                if ( esos_uiF14_isRpgTurningCW() ) {
+                if ( RPG_TURN_CW() ) {
                     outString("RPG is turning CW medium\n");
                 }
 
-                if ( esos_uiF14_isRpgTurningCCW() ) {
+                if ( RPG_TURN_CCW() ) {
                     outString("RPG is turning CCW medium\n");
                 }
             }
 
             if ( esos_uiF14_isRpgTurningFast() ) {
-                if ( esos_uiF14_isRpgTurningCW() ) {
+                if ( RPG_TURN_CW() ) {
                     outString("RPG is turning CW fast\n");
                 }
 
-                if ( esos_uiF14_isRpgTurningCCW() ) {
+                if ( RPG_TURN_CCW() ) {
                     outString("RPG is turning CCW fast\n");
                 }
             }
