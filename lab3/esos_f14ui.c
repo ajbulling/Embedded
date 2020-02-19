@@ -13,6 +13,7 @@
 #include "pic24_all.h"
 
 int timer_on = 0;
+int velocity_count = 0;
 ESOS_TMR_HANDLE esos_timer_handle_1, esos_timer_handle_2;
 
 // PRIVATE FUNCTIONS
@@ -21,6 +22,36 @@ inline void _esos_uiF14_setRPGCounter (uint16_t newValue) {
     _st_esos_uiF14Data.u16_lastRPGCounter = _st_esos_uiF14Data.u16_RPGCounter;
     _st_esos_uiF14Data.u16_RPGCounter = newValue;
     return;
+}
+
+inline void esos_uiF14_resetVelocity () {
+    velocity_count = 0;
+}
+
+inline void _esos_uiF14_calculateVelocity () {
+    if (velocity_count <= 10000){
+        ++velocity_count;
+    }
+    // RPG is stopped
+    if ( velocity_count > 10000 ) {
+        // Velocity is zero
+        _st_esos_uiF14Data.i16_RPGVelocity = 0;
+    }
+    // RPG speed is slow
+    else if ( velocity_count > 5000 ) {
+        // Velocity is slow
+        _st_esos_uiF14Data.i16_RPGVelocity = 3;
+    }
+    // RPG speed is medium
+    else if ( velocity_count > 2000 ) {
+        // Velocity is medium
+        _st_esos_uiF14Data.i16_RPGVelocity = 7;
+    }
+    // RPG speed is fast
+    else {
+        // Velocity is high
+        _st_esos_uiF14Data.i16_RPGVelocity = 13;
+    }
 }
 
 inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
@@ -63,12 +94,16 @@ inline bool esos_uiF14_checkHW (void) {
             _st_esos_uiF14Data.b_SW2DoublePressed = true;
             _st_esos_uiF14Data.b_SW2Pressed = false;
         }
-
     }
     if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
 
-    if (SW3_PRESSED) _st_esos_uiF14Data.b_SW3Pressed = true;
-    if (SW3_RELEASED) _st_esos_uiF14Data.b_SW3Pressed = false;
+    if (SW3_PRESSED) {
+        _st_esos_uiF14Data.b_SW3Pressed = true;
+    } 
+    else {
+        _st_esos_uiF14Data.b_SW3Pressed = false;
+    }
+    // if (SW3_RELEASED) _st_esos_uiF14Data.b_SW3Pressed = false;
 
     if (RPG_TURN_CW()) _esos_uiF14_setRPGCounter(_st_esos_uiF14Data.u16_RPGCounter + 1);
     if (RPG_TURN_CCW()) _esos_uiF14_setRPGCounter(_st_esos_uiF14Data.u16_RPGCounter - 1);
@@ -268,15 +303,15 @@ inline uint16_t esos_uiF14_getRpgValue_u16 ( void ) {
 }
 
 inline bool esos_uiF14_isRpgTurning ( void ) {
-    return (esos_uiF14_getRpgVelocity_i16() != 0);
+    return ( RPG_TURN_CCW() || RPG_TURN_CW() );
 }
 
 inline bool esos_uiF14_isRpgTurningSlow( void ) {
-    return (abs(esos_uiF14_getRpgVelocity_i16()) <= 5 && abs(esos_uiF14_getRpgVelocity_i16()) > 0);
+    return ((abs(esos_uiF14_getRpgVelocity_i16()) <= 5) && (abs(esos_uiF14_getRpgVelocity_i16()) > 0));
 }
 
 inline bool esos_uiF14_isRpgTurningMedium( void ) {
-    return (5 < abs(esos_uiF14_getRpgVelocity_i16()) < 10);
+    return ((5 < abs(esos_uiF14_getRpgVelocity_i16())) && (abs(esos_uiF14_getRpgVelocity_i16()) < 10));
 }
 
 inline bool esos_uiF14_isRpgTurningFast( void ) {
@@ -292,7 +327,7 @@ inline bool esos_uiF14_isRpgTurningCCW( void ) {
 }
 
 int16_t esos_uiF14_getRpgVelocity_i16( void ) {
-    return _st_esos_uiF14Data.u16_RPGCounter - _st_esos_uiF14Data.u16_lastRPGCounter;
+    return _st_esos_uiF14Data.i16_RPGVelocity;
 }
 
 // UIF14 INITIALIZATION FUNCTION
@@ -306,6 +341,9 @@ void config_esos_uiF14() {
   SW1_CONFIG();
   SW2_CONFIG();
   SW3_CONFIG();
+  SW1_CONFIG2();
+  SW2_CONFIG2();
+  SW3_CONFIG2();
 
   // Configure rotary encoder
   CONFIG_RPGA();

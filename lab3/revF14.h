@@ -55,10 +55,16 @@ For Microchip dsPIC33EP512GP806
 #define SW3_PRESSED (_RC15 == 0)
 
 //Configure RPG
-#define CONFIG_RPGA() CONFIG_RB8_AS_DIG_INPUT()
-#define RPGA _RB8
-#define CONFIG_RPGB() CONFIG_RB9_AS_DIG_INPUT()
-#define RPGB _RB9
+#define CONFIG_RPGA() { \
+    CONFIG_RB8_AS_DIG_INPUT(); \
+    ENABLE_RB8_PULLUP(); \
+}
+#define RPGA (_RB8)
+#define CONFIG_RPGB() { \
+    CONFIG_RB9_AS_DIG_INPUT(); \
+    ENABLE_RB9_PULLUP(); \
+}
+#define RPGB (_RB9)
 #define RPG_TURN_CW() (RPGA == 1 && RPGB == 0)
 #define RPG_TURN_CCW() (RPGA == 0 && RPGB == 1)
 #define RPG_STOPPED() (RPGA == 0 && RPGB == 0)

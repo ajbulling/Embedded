@@ -10,6 +10,7 @@ ESOS_USER_TASK ( CHECK_HW ){
     ESOS_TASK_BEGIN();
     while ( true ){
         esos_uiF14_checkHW();
+        _esos_uiF14_calculateVelocity();
         ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
@@ -18,6 +19,7 @@ ESOS_USER_TASK ( CHECK_HW ){
 ESOS_USER_TASK ( SERIAL_PRINT ){
     ESOS_TASK_BEGIN();
     while( TRUE ){
+        ESOS_TASK_WAIT_TICKS( __ESOS_UIF14_UI_PERIOD_MS );
         if ( esos_uiF14_isSW1Pressed() ){
             outString("SW1 Pressed\n");
         }
@@ -32,10 +34,12 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
 
         if ( esos_uiF14_isSW1DoublePressed() ){
             outString("SW1 Double Pressed\n");
+            esos_uiF14_SW1DoublePressedExpired();
         }
 
         if ( esos_uiF14_isSW2DoublePressed() ){
             outString("SW2 Double Pressed\n");
+            esos_uiF14_SW2DoublePressedExpired();
         }
 
         if ( esos_uiF14_isSW3DoublePressed() ){
@@ -73,6 +77,7 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
                     outString("RPG is turning CCW fast\n");
                 }
             }
+            esos_uiF14_resetVelocity();
         }
         ESOS_TASK_YIELD();
     }
@@ -82,8 +87,8 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
 ESOS_USER_TASK( LED3_blink ){
     ESOS_TASK_BEGIN();
     while ( TRUE ){
-        esos_uiF14_flashLED3(250);
-        ESOS_TASK_YIELD();
+        esos_uiF14_toggleLED3();
+        ESOS_TASK_WAIT_TICKS(250);
     }
     ESOS_TASK_END();
 }
@@ -99,12 +104,14 @@ ESOS_USER_TASK( LED2_state ){
 	    }
         else if ( esos_uiF14_isRpgTurningMedium() ){
 	        while ( esos_uiF14_isRpgTurningMedium() ){
-	            esos_uiF14_flashLED2(500);
+	            esos_uiF14_toggleLED2();
+                ESOS_TASK_WAIT_TICKS(125);
             }
 	    }
 	    else if ( esos_uiF14_isRpgTurningFast() ){
 	        while ( esos_uiF14_isRpgTurningFast() ){
-                esos_uiF14_flashLED2(100);
+                esos_uiF14_toggleLED2();
+                ESOS_TASK_WAIT_TICKS(50);
 	        }
         }
         ESOS_TASK_YIELD();
@@ -126,8 +133,6 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
                 esos_uiF14_flashLED1(50);
-                esos_uiF14_turnLED1Off();
-                esos_uiF14_SW2DoublePressedExpired();
             }
         }
         else {
@@ -138,11 +143,9 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_turnLED1Off();
             }
             if (esos_uiF14_isSW1DoublePressed() ){
-                esos_uiF14_flashLED1(50);
-                esos_uiF14_flashLED1(50);
-                esos_uiF14_flashLED1(50);
-                esos_uiF14_turnLED1Off();
-                esos_uiF14_SW1DoublePressedExpired();
+                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(500);
             }
         }
         ESOS_TASK_YIELD();
@@ -152,6 +155,7 @@ ESOS_USER_TASK( LED1_state){
 
 void user_init() {
 /*
+    // Configured in other .c file
     // Configure LED hardware
     LED1_CONFIG();
     LED2_CONFIG();
