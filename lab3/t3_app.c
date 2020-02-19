@@ -34,12 +34,11 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
 
         if ( esos_uiF14_isSW1DoublePressed() ){
             outString("SW1 Double Pressed\n");
-            esos_uiF14_SW1DoublePressedExpired();
+            //esos_uiF14_SW1DoublePressedExpired();
         }
 
         if ( esos_uiF14_isSW2DoublePressed() ){
             outString("SW2 Double Pressed\n");
-            esos_uiF14_SW2DoublePressedExpired();
         }
 
         if ( esos_uiF14_isSW3DoublePressed() ){
@@ -130,29 +129,32 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_turnLED1Off();
             }
             if ( esos_uiF14_isSW2DoublePressed() ){
-                esos_uiF14_flashLED1(50);
+                esos_uiF14_flashLED1(500);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(50);
+                esos_uiF14_flashLED1(500);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(50);
+                esos_uiF14_flashLED1(500);
                 //ESOS_TASK_WAIT_TICKS(50);
+                esos_uiF14_SW2DoublePressedExpired();
+
+
             }
         }
         else {
             if ( esos_uiF14_isSW1Pressed() ){
-                outString("I SHOULD BE ON!!!!!!!!!!!!!");
                 esos_uiF14_turnLED1On();
             }
             else {
                 esos_uiF14_turnLED1Off();
             }
             if (esos_uiF14_isSW1DoublePressed() ){
-                esos_uiF14_flashLED1(50);
+                esos_uiF14_flashLED1(500);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(50);
+                esos_uiF14_flashLED1(500);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(50);
+                esos_uiF14_flashLED1(500);
                 //ESOS_TASK_WAIT_TICKS(50);
+                esos_uiF14_SW1DoublePressedExpired();
             }
         }
         ESOS_TASK_YIELD();

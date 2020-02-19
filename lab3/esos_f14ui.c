@@ -14,6 +14,8 @@
 
 int timer_on = 0;
 int velocity_count = 0;
+bool SW1_been_released = false;
+bool SW2_been_released = false;
 ESOS_TMR_HANDLE esos_timer_handle_1, esos_timer_handle_2;
 
 // PRIVATE FUNCTIONS
@@ -64,15 +66,16 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 // Check hardware
 inline bool esos_uiF14_checkHW (void) {
     if (SW1_PRESSED) {
-        DELAY_MS(30);
+        DELAY_MS(60);
         if (timer_on != 1) {
             // Timer is not running, so it is a single press and the timer should be started
             _st_esos_uiF14Data.b_SW1Pressed = true;
             _st_esos_uiF14Data.b_SW1DoublePressed = false;
+            SW1_been_released = false;
             timer_on = 1;
-            esos_timer_handle_1 = esos_RegisterTimer(doublePressedTimer, 200);
+            esos_timer_handle_1 = esos_RegisterTimer(doublePressedTimer, 2000);
         }
-        else {
+        else if ( SW1_been_released ) {
             // Timer is already running, so it is a double press
             esos_UnregisterTimer(esos_timer_handle_1);
             timer_on = 0;
@@ -80,24 +83,31 @@ inline bool esos_uiF14_checkHW (void) {
             _st_esos_uiF14Data.b_SW1Pressed = false;
         }
     }
-    if (SW1_RELEASED) _st_esos_uiF14Data.b_SW1Pressed = false;
+    if (SW1_RELEASED) {
+        SW1_been_released = true;
+        _st_esos_uiF14Data.b_SW1Pressed = false;
+    }
 
     if (SW2_PRESSED) {
         DELAY_MS(30);
         if (timer_on != 1) {
             _st_esos_uiF14Data.b_SW2Pressed = true;
             _st_esos_uiF14Data.b_SW2DoublePressed = false;
+            SW2_been_released = false;
             timer_on = 1;
-            esos_timer_handle_2 = esos_RegisterTimer(doublePressedTimer, 200);
+            esos_timer_handle_2 = esos_RegisterTimer(doublePressedTimer, 2000);
         }
-        else {
+        else if ( SW2_been_released ) {
             esos_UnregisterTimer(esos_timer_handle_2);
             timer_on = 0;
             _st_esos_uiF14Data.b_SW2DoublePressed = true;
             _st_esos_uiF14Data.b_SW2Pressed = false;
         }
     }
-    if (SW2_RELEASED) _st_esos_uiF14Data.b_SW2Pressed = false;
+    if (SW2_RELEASED) {
+        SW2_been_released = true;
+        _st_esos_uiF14Data.b_SW2Pressed = false;
+    }
 
     if (SW3_PRESSED) {
         _st_esos_uiF14Data.b_SW3Pressed = true;
