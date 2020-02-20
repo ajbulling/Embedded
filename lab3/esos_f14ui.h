@@ -27,7 +27,11 @@ typedef struct _st_esos_uiF14Data_t {
     bool b_LED2On;
     uint16_t u16_LED2FlashPeriod;        
     bool b_LED3On;
-    uint16_t u16_LED3FlashPeriod;        
+    uint16_t u16_LED3FlashPeriod;      
+
+    uint16_t u16_RPGSlowThreshold;
+    uint16_t u16_RPGMediumThreshold;
+    uint16_t u16_RPGFastThreshold;  
     
     uint16_t u16_RPGCounter;
     uint16_t u16_lastRPGCounter;
@@ -53,7 +57,7 @@ uint16_t esos_uiF14_getLastRPGCounter (void);
 void esos_ui_setLastRPGCounter (uint16_t);
 
 ESOS_USER_TASK(__uiF14_task);
-ESOS_USER_TASK(DOUBLE_PRESSED_TIMER);
+ESOS_USER_TIMER(doublePressedTimer);
 
 // PUBLIC API FUNCTION PROTOTYPES
 

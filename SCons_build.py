@@ -166,4 +166,14 @@ if 'lab2' in buildTargets:
   buildWithCommonSources(['lab2/*.c'], PIC24SupportLibObjects, env, {}, 'lab2')
 if 'lab3' in buildTargets:
   buildWithCommonSources(['lab3/*.c'], PIC24SupportLibObjects, env, {}, 'lab3')
+if 'lab4' in buildTargets:
+  buildWithCommonSources(['lab4/*.c'], PIC24SupportLibObjects, env, {}, 'lab4')
+if 'lab5' in buildTargets:
+  buildWithCommonSources(['lab5/*.c'], PIC24SupportLibObjects, env, {}, 'lab5')
+if 'lab6' in buildTargets:
+  buildWithCommonSources(['lab6/*.c'], PIC24SupportLibObjects, env, {}, 'lab6')
+if 'lab7' in buildTargets:
+  buildWithCommonSources(['lab7/*.c'], PIC24SupportLibObjects, env, {}, 'lab7')
+if 'lab8' in buildTargets:
+  buildWithCommonSources(['lab8/*.c'], PIC24SupportLibObjects, env, {}, 'lab8')
 

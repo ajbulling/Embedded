@@ -230,6 +230,7 @@ def buildTargetsSConscript(
 # Build over various MCUs
 # -----------------------
 # Build some selected chapter applications for the CAN2 rev.F14 board used in ECE4723 Embedded Systems
-buildTargetsSConscript(['chap08', 'chap09', 'chap14', 'lab2', 'lab3'],
+buildTargetsSConscript(['chap08', 'chap09', 'chap14', 'lab2', 'lab3', 'lab4',
+    'lab5', 'lab6', 'lab7', 'lab8'],
   env.Clone(MCU='33EP512GP806', CPPDEFINES='HARDWARE_PLATFORM=EMBEDDED_F14'), 'embeddedF14')
 
