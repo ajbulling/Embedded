@@ -63,3 +63,11 @@ For Microchip dsPIC33EP512GP806
 #define RPG_TURN_CCW() (RPGA == 0 && RPGB == 1)
 #define RPG_STOPPED() (RPGA == 0 && RPGB == 0)
 
+//Configure Potentiometer
+#define CONFIG_POT() CONFIG_RB2_AS_ANALOG()
+#define POT _RB2
+
+//Configure Temp Sensor
+#define CONFIG_TEMP() CONFIG_RB3_AS_ANALOG()
+#define TEMP _RB3
+
