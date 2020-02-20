@@ -30,22 +30,34 @@ inline void esos_uiF14_resetVelocity () {
     velocity_count = 0;
 }
 
+inline void _esos_uiF14_setSlowThreshold( uint16_t slowThreshold ) {
+    _st_esos_uiF14Data.u16_RPGSlowThreshold = slowThreshold;
+}
+
+inline void _esos_uiF14_setMediumThreshold( uint16_t mediumThreshold ) {
+    _st_esos_uiF14Data.u16_RPGMediumThreshold = mediumThreshold;
+}
+
+inline void _esos_uiF14_setFastThreshold( uint16_t fastThreshold ) {
+    _st_esos_uiF14Data.u16_RPGFastThreshold = fastThreshold;
+}
+
 inline void _esos_uiF14_calculateVelocity () {
-    if (velocity_count <= 10000){
+    if (velocity_count <= _st_esos_uiF14Data.u16_RPGSlowThreshold){
         ++velocity_count;
     }
     // RPG is stopped
-    if ( velocity_count > 10000 ) {
+    if ( velocity_count > _st_esos_uiF14Data.u16_RPGSlowThreshold ) {
         // Velocity is zero
         _st_esos_uiF14Data.i16_RPGVelocity = 0;
     }
     // RPG speed is slow
-    else if ( velocity_count > 5000 ) {
+    else if ( velocity_count > _st_esos_uiF14Data.u16_RPGMediumThreshold ) {
         // Velocity is slow
         _st_esos_uiF14Data.i16_RPGVelocity = 3;
     }
     // RPG speed is medium
-    else if ( velocity_count > 2000 ) {
+    else if ( velocity_count > _st_esos_uiF14Data.u16_RPGFastThreshold ) {
         // Velocity is medium
         _st_esos_uiF14Data.i16_RPGVelocity = 7;
     }

@@ -6,23 +6,17 @@
 #include "revF14.h"
 #include "pic24_all.h"
 
+uint8_t num;
+uint16_t doublePressPeriod;
+
+char* numArray [5];
+
 ESOS_USER_TASK ( CHECK_HW ){
     ESOS_TASK_BEGIN();
     while ( true ){
         esos_uiF14_checkHW();
+        //ESOS_TASK_WAIT_TICKS(10);
         _esos_uiF14_calculateVelocity();
-        ESOS_TASK_YIELD();
-    }
-    ESOS_TASK_END();
-}
-
-uint8_t num;
-ESOS_USER_TASK ( SERIAL_READ ){
-    ESOS_TASK_BEGIN();
-    while (true) {
-        ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
-        ESOS_TASK_WAIT_ON_GET_UINT8(num);
-        ESOS_TASK_WAIT_ON_SEND_STRING(num);
         ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
@@ -30,6 +24,72 @@ ESOS_USER_TASK ( SERIAL_READ ){
 
 ESOS_USER_TASK ( SERIAL_PRINT ){
     ESOS_TASK_BEGIN();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING("Enter period for double press flash (1-10): ");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+    ESOS_TASK_WAIT_ON_GET_STRING(numArray);
+    ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING(numArray);
+    ESOS_TASK_WAIT_ON_SEND_STRING("\n");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    // Subtract stupid ascii number and scale up
+    doublePressPeriod = atoi(numArray);
+    doublePressPeriod *= 50;
+
+    // Input for slow RPG behavior
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING("Enter RPG slow threshold (1-10): ");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+    ESOS_TASK_WAIT_ON_GET_STRING(numArray);
+    ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING(numArray);
+    ESOS_TASK_WAIT_ON_SEND_STRING("\n");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    _esos_uiF14_setSlowThreshold(atoi(numArray) * 1000);
+
+    // Input for medium RPG behavior
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING("Enter RPG medium threshold (1-10): ");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+    ESOS_TASK_WAIT_ON_GET_STRING(numArray);
+    ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING(numArray);
+    ESOS_TASK_WAIT_ON_SEND_STRING("\n");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    _esos_uiF14_setMediumThreshold(atoi(numArray) * 1000);
+
+    // Input for fast RPG behavior
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING("Enter RPG fast threshold (1-10): ");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+    ESOS_TASK_WAIT_ON_GET_STRING(numArray);
+    ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+
+    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+    ESOS_TASK_WAIT_ON_SEND_STRING(numArray);
+    ESOS_TASK_WAIT_ON_SEND_STRING("\n");
+    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+    _esos_uiF14_setFastThreshold(atoi(numArray) * 500);
+
     while( TRUE ){
         ESOS_TASK_WAIT_TICKS( __ESOS_UIF14_UI_PERIOD_MS );
         if ( esos_uiF14_isSW1Pressed() ){
@@ -46,7 +106,6 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
 
         if ( esos_uiF14_isSW1DoublePressed() ){
             outString("SW1 Double Pressed\n");
-            //esos_uiF14_SW1DoublePressedExpired();
         }
 
         if ( esos_uiF14_isSW2DoublePressed() ){
@@ -89,7 +148,7 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
                 }
             }
             esos_uiF14_resetVelocity();
-        }
+        } 
         ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
@@ -141,11 +200,11 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_turnLED1Off();
             }
             if ( esos_uiF14_isSW2DoublePressed() ){
-                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
                 esos_uiF14_SW2DoublePressedExpired();
 
@@ -160,11 +219,11 @@ ESOS_USER_TASK( LED1_state){
                 esos_uiF14_turnLED1Off();
             }
             if (esos_uiF14_isSW1DoublePressed() ){
-                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
-                esos_uiF14_flashLED1(500);
+                esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
                 esos_uiF14_SW1DoublePressedExpired();
             }
@@ -194,6 +253,5 @@ void user_init() {
     esos_RegisterTask( LED2_state );
     esos_RegisterTask( LED1_state );
     esos_RegisterTask( CHECK_HW );
-    //esos_RegisterTask( SERIAL_PRINT );
-    esos_RegisterTask( SERIAL_READ );
+    esos_RegisterTask( SERIAL_PRINT );
 }
