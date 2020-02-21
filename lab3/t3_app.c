@@ -9,6 +9,7 @@
 uint8_t num;
 uint16_t doublePressPeriod;
 
+// variable to store user input
 char* numArray [5];
 
 ESOS_USER_TASK ( CHECK_HW ){
@@ -38,7 +39,7 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
     ESOS_TASK_WAIT_ON_SEND_STRING("\n");
     ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
-    // Subtract stupid ascii number and scale up
+    // Scale up entered value to difference is noticable
     doublePressPeriod = atoi(numArray);
     doublePressPeriod *= 50;
 
@@ -90,6 +91,7 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
 
     _esos_uiF14_setFastThreshold(atoi(numArray) * 500);
 
+    // Handles printing hardware states
     while( TRUE ){
         ESOS_TASK_WAIT_TICKS( __ESOS_UIF14_UI_PERIOD_MS );
         if ( esos_uiF14_isSW1Pressed() ){
@@ -147,6 +149,7 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
                     outString("RPG is turning CCW fast\n");
                 }
             }
+            // resets RPG velocity counter for next loop
             esos_uiF14_resetVelocity();
         } 
         ESOS_TASK_YIELD();
@@ -154,6 +157,7 @@ ESOS_USER_TASK ( SERIAL_PRINT ){
     ESOS_TASK_END();
 }
 
+// ESOS task for Heartbeat LED3
 ESOS_USER_TASK( LED3_blink ){
     ESOS_TASK_BEGIN();
     while ( TRUE ){
@@ -163,21 +167,26 @@ ESOS_USER_TASK( LED3_blink ){
     ESOS_TASK_END();
 }
 
+// ESOS task for LED2 when RPG turns
 ESOS_USER_TASK( LED2_state ){
     ESOS_TASK_BEGIN();
     while ( TRUE ){
+        // if RPG not turning, turn off LED2
         if ( esos_uiF14_getRpgVelocity_i16() == 0){
 	        esos_uiF14_turnLED2Off();
 	    }
+        // if RPG turning slow, turn on LED2
         else if ( esos_uiF14_isRpgTurningSlow() ){
 	        esos_uiF14_turnLED2On();
 	    }
+        // if RPG turning medium, toggle on LED2 and wait 125 MS for flash
         else if ( esos_uiF14_isRpgTurningMedium() ){
 	        while ( esos_uiF14_isRpgTurningMedium() ){
 	            esos_uiF14_toggleLED2();
                 ESOS_TASK_WAIT_TICKS(125);
             }
 	    }
+        // if RPG turning fast, toggle on LED2 and wait 50MS for fast flash
 	    else if ( esos_uiF14_isRpgTurningFast() ){
 	        while ( esos_uiF14_isRpgTurningFast() ){
                 esos_uiF14_toggleLED2();
@@ -189,9 +198,12 @@ ESOS_USER_TASK( LED2_state ){
     ESOS_TASK_END();
 }
 
+
+// LED1 ESOS Task
 ESOS_USER_TASK( LED1_state){
     ESOS_TASK_BEGIN();
     while ( TRUE ){
+        // if SW3 pressed, display SW2 results
         if ( esos_uiF14_isSW3Pressed() ){
             if ( esos_uiF14_isSW2Pressed() ){
                 esos_uiF14_turnLED1On();
@@ -199,6 +211,7 @@ ESOS_USER_TASK( LED1_state){
             else {
                 esos_uiF14_turnLED1Off();
             }
+            // if SW2 double pressed, triple flash LED1 using provided period
             if ( esos_uiF14_isSW2DoublePressed() ){
                 esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
@@ -211,6 +224,7 @@ ESOS_USER_TASK( LED1_state){
 
             }
         }
+        // Display SW1 pressed on LED1
         else {
             if ( esos_uiF14_isSW1Pressed() ){
                 esos_uiF14_turnLED1On();
@@ -218,6 +232,7 @@ ESOS_USER_TASK( LED1_state){
             else {
                 esos_uiF14_turnLED1Off();
             }
+            // if SW1 double pressed, triple flash LED1 using provided period
             if (esos_uiF14_isSW1DoublePressed() ){
                 esos_uiF14_flashLED1(doublePressPeriod);
                 //ESOS_TASK_WAIT_TICKS(50);
