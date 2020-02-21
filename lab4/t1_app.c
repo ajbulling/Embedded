@@ -9,12 +9,11 @@
 #include "esos_f14ui.h"
 #include "esos_f14ui.c"
 #include "esos.h"
-//#include "esos_hwxxx_sensor.h"
+#include "esos_pic24_sensor.h"
 
 static uint16_t* pdata_buffer;
 char print_string[5];
 static ESOS_TASK_HANDLE read_adc;
-
 
 ESOS_USER_TASK ( QUICK_READ_TEST ) {
     ESOS_TASK_BEGIN();
