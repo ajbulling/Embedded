@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "esos_sensor.h"
-#include "esos_sensor.c"
 #include "pic24_all.h"
 #include "revF14.h"
 #include "esos_f14ui.h"
