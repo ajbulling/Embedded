@@ -21,10 +21,10 @@ void esos_sensor_config_hw( esos_sensor_ch_t sensor_channel, esos_sensor_vref_t 
     AD1CON1bits.ADON = 0;
 
     // Select CH0 negative value = Vref
-    AD1CHS0.CH0NA = 0;
+    AD1CHS0bits.CH0NA = 0;
 
     // Set sensor channel
-    AD1CHS0.CH0SA = sensor_channel;
+    AD1CHS0bits.CH0SA = sensor_channel;
 
     // Disable Stop on idle
     AD1CON1bits.ADSIDL = 0;
@@ -33,20 +33,20 @@ void esos_sensor_config_hw( esos_sensor_ch_t sensor_channel, esos_sensor_vref_t 
     AD1CON1bits.ADDMABM = 1;
 
     // Enable 12 Bit mode
-    AD1CONbits.AD12B = 1;
+    AD1CON1bits.AD12B = 1;
 
     // Configure Data Output format
-    AD1CONbits.FORM = 0;
+    AD1CON1bits.FORM = 0;
 
     // Configure Sample Clock
-    AD1CONbits.SSRC = 7;
-    AD1CONbits.SSRCG = 0;
+    AD1CON1bits.SSRC = 7;
+    AD1CON1bits.SSRCG = 0;
 
     // ADC autostart config
-    AD1CONbits.ASAM = 0;
+    AD1CON1bits.ASAM = 0;
 
     // Configure Sample Enable
-    AD1CONbits.SAMP = 0;
+    AD1CON1bits.SAMP = 0;
 
     // Turn on ADC
     AD1CON1bits.ADON = 1;
