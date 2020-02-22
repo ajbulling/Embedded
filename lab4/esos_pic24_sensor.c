@@ -7,13 +7,14 @@ void esos_sensor_initiate_hw(){
 }
 
 bool esos_sensor_is_converting_hw(){
-    return !AD1CON1bits.SAMP;
+    return AD1CON1bits.SAMP;
 }
 
 uint16_t esos_sensor_getvalue_u16_hw(){
     // refer to adc7scan1 from micro code repo
-    uint16_t* au16_adcHWBuff = (uint16_t*) &ADC1BUF0;
-    return *au16_adcHWBuff;
+    //uint16_t* au16_adcHWBuff = (uint16_t*) &ADC1BUF0;
+    //return *au16_adcHWBuff;
+    return ADC1BUF0;
 }
 
 void esos_sensor_config_hw( esos_sensor_ch_t sensor_channel, esos_sensor_vref_t sensor_vref ){
