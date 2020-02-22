@@ -53,6 +53,7 @@ uint8_t __esos_u8_GetLSBHexCharFromUint8(uint8_t u8_x);
 ESOS_CHILD_TASK( __esos_OutChar, uint8_t u8_c);
 ESOS_CHILD_TASK( __esos_OutUint8AsDecString, uint8_t u8_x);
 ESOS_CHILD_TASK( __esos_OutUint8AsHexString, uint8_t u8_x);
+ESOS_CHILD_TASK( __esos_OutUint16AsHexString, uint16_t u16_x);
 ESOS_CHILD_TASK( __esos_OutUint32AsHexString, uint32_t u32_x);
 ESOS_CHILD_TASK( __esos_OutCharBuffer, uint8_t* pu8_out, uint8_t u8_len);
 ESOS_CHILD_TASK( __esos_getBuffer, uint8_t* pau8_buff, uint8_t u8_size);
@@ -427,6 +428,9 @@ uint8_t __esos_unsafe_GetUint8(void);
 */
 #define   ESOS_TASK_WAIT_ON_SEND_UINT32_AS_HEX_STRING( u32_out)         \
             ESOS_TASK_SPAWN_AND_WAIT( (ESOS_TASK_HANDLE)&__stChildTaskTx, __esos_OutUint32AsHexString, (u32_out) )
+
+#define   ESOS_TASK_WAIT_ON_SEND_UINT16_AS_HEX_STRING( u16_out)         \
+            ESOS_TASK_SPAWN_AND_WAIT( (ESOS_TASK_HANDLE)&__stChildTaskTx, __esos_OutUint16AsHexString, (u16_out) )
 
 /**
 * Create, spawn and wait on a child task to put a zero-terminated string to the ESOS "out" communications buffer.

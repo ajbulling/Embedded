@@ -169,6 +169,32 @@ ESOS_CHILD_TASK( __esos_OutUint32AsHexString, uint32_t u32_x) {
 
 } // end __esos_OutUint32AsHexString()
 
+ESOS_CHILD_TASK( __esos_OutUint16AsHexString, uint16_t u16_x) {
+  static uint8_t        au8_String[7];
+  static uint8_t        u8_c;
+  static uint16_t       u16_tmp;
+
+  ESOS_TASK_BEGIN();
+  au8_String[0] = '0';
+  au8_String[1] = 'x';
+  u8_c = (u16_x >> 8);
+  au8_String[2] = __esos_u8_GetMSBHexCharFromUint8(u8_c);
+  au8_String[3] = __esos_u8_GetLSBHexCharFromUint8(u8_c);
+  u8_c = u16_x;
+  au8_String[4] = __esos_u8_GetMSBHexCharFromUint8(u8_c);
+  au8_String[5] = __esos_u8_GetLSBHexCharFromUint8(u8_c);
+  au8_String[6] = 0;
+  u8_c = 0;
+
+  while (u8_c < 6) {
+    __ESOS_COMM_TXFIFO_PREP();
+    ESOS_TASK_WAIT_WHILE(  u16_tmp == __st_TxBuffer.u16_Tail );
+    __ESOS_COMM_WRITE_TXFIFO( au8_String[u8_c++] ); //write to buffer
+    __esos_hw_signal_start_tx();
+  } //end while()
+  ESOS_TASK_END();
+
+} // end __esos_OutUint16AsHexString()
 
 ESOS_CHILD_TASK( __esos_OutCharBuffer, uint8_t* pu8_out, uint8_t u8_len) {
   static uint16_t       u16_tmp;
