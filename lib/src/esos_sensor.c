@@ -30,6 +30,7 @@
 #include "esos_sensor.h"
 #include <esos.h>
 #include <stdlib.h>
+#include "../../lab4/esos_pic24_sensor.h"
 
 /**
 * Waits until a sensor is available.

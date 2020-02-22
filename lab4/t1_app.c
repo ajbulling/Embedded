@@ -10,6 +10,7 @@
 #include "esos_f14ui.c"
 #include "esos.h"
 #include "esos_pic24_sensor.h"
+#include "esos_pic24_sensor.c"
 
 static uint16_t* pdata_buffer;
 char print_string[5];
@@ -31,3 +32,4 @@ ESOS_USER_TASK ( QUICK_READ_TEST ) {
 void user_init() {
     esos_RegisterTask( QUICK_READ_TEST );
 }
+

@@ -1,5 +1,6 @@
 
 #include "esos_pic24_sensor.h"
+#include "esos_sensor.h"
 
 void esos_sensor_initiate_hw(){
     esos_SetUserFlag(ESOS_SENSOR_IS_CONVERTING_FLAG);
