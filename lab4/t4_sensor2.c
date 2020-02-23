@@ -13,9 +13,11 @@
 #include "esos_pic24_sensor.c"
 
 uint16_t pot_data;
-char* numArray [5];
 char* processMode [1];
 char* numSamples [1];
+uint8_t input1;
+uint8_t input2;
+uint8_t pmode;
 bool continuousOutput = false;
 
 // ESOS task for Heartbeat LED3
@@ -76,19 +78,34 @@ ESOS_USER_TASK ( QUICK_READ_TEST ) {
             ESOS_TASK_WAIT_ON_SEND_STRING(processMode);
             ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
-            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-            ESOS_TASK_WAIT_ON_SEND_STRING("\nEnter the number of samples for the process. \n1) 2\n2) 4\n3) 8\n4) 16\n5) 32\n6) 64\n");
-            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+            input1 = atoi(processMode);
+            // Don't ask for samples if one-shot mode is selected
+            if (input1 != 1) {
+                ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+                ESOS_TASK_WAIT_ON_SEND_STRING("\nEnter the number of samples for the process. \n1) 2\n2) 4\n3) 8\n4) 16\n5) 32\n6) 64\n");
+                ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
-            ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
-            ESOS_TASK_WAIT_ON_GET_STRING(numSamples);
-            ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+                ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+                ESOS_TASK_WAIT_ON_GET_STRING(numSamples);
+                ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
 
-            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-            ESOS_TASK_WAIT_ON_SEND_STRING(numSamples);
-            ESOS_TASK_WAIT_ON_SEND_STRING("\n");
-            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+                ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+                ESOS_TASK_WAIT_ON_SEND_STRING(numSamples);
+                ESOS_TASK_WAIT_ON_SEND_STRING("\n");
+                ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
+                input2 = atoi(numSamples);
+                /* Ignore one for one-shot, start at zero so subtract 2
+                * Then add 4 to move over to the upper 4 bits
+                * -2 + 4 = 2, so add 2 to input 1
+                */
+                input1 += 2;
+                pmode = 1 << input1; // bit-shift over to select processing mode
+                pmode |= input2; // bit-wise OR to select number of samples
+            }
+            else {
+                pmode = 0; // Process mode is 0 for one-shot
+            }
         }
         ESOS_TASK_YIELD();        
     }
