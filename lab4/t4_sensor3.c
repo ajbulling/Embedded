@@ -12,7 +12,7 @@
 #include "esos_pic24_sensor.h"
 #include "esos_pic24_sensor.c"
 
-uint16_t pot_data;
+uint16_t temp_data;
 char* processMode [1];
 char* numSamples [1];
 uint8_t input1;
@@ -32,14 +32,20 @@ ESOS_USER_TASK ( LED3_blink ) {
 
 ESOS_USER_TASK ( READ_ADC ) {
     ESOS_TASK_BEGIN();
-    // Potentiometer is on channel 2
+    // Temp sensor is on channel 3
     ESOS_TASK_WAIT_ON_AVAILABLE_SENSOR(ESOS_SENSOR_CH03, ESOS_SENSOR_VREF_1V0);
-    ESOS_TASK_WAIT_SENSOR_READ(pot_data, pmode, ESOS_SENSOR_FORMAT_VOLTAGE);
+    ESOS_TASK_WAIT_SENSOR_READ(temp_data, pmode, ESOS_SENSOR_FORMAT_VOLTAGE);
     ESOS_SENSOR_CLOSE();
+
+    uint32_t pu32_out;
+
+    pu32_out = (uint32_t)temp_data * 1000;
+    pu32_out = (pu32_out - 424000) / 625;
+    pu32_out /= 100;
 
     // Output data from ADC
     ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-    ESOS_TASK_WAIT_ON_SEND_UINT16_AS_HEX_STRING(pot_data);
+    ESOS_TASK_WAIT_ON_SEND_UINT32_AS_HEX_STRING(pu32_out);
     ESOS_TASK_WAIT_ON_SEND_UINT8('\n');
     ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
