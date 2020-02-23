@@ -78,22 +78,26 @@ inline void _esos_uiF14_setLastRPGCounter (uint16_t newValue) {
 // Check hardware
 inline bool esos_uiF14_checkHW (void) {
     if (SW1_PRESSED) {
-        DELAY_MS(60);
+        DELAY_MS(30);
+        SW1_been_released = false;
+        _st_esos_uiF14Data.b_SW1Pressed = true;
+        /*
         if (timer_on != 1) {
             // Timer is not running, so it is a single press and the timer should be started
             _st_esos_uiF14Data.b_SW1Pressed = true;
-            _st_esos_uiF14Data.b_SW1DoublePressed = false;
+            //_st_esos_uiF14Data.b_SW1DoublePressed = false;
             SW1_been_released = false;
-            timer_on = 1;
-            esos_timer_handle_1 = esos_RegisterTimer(doublePressedTimer, 2000);
+            //timer_on = 1;
+            //esos_timer_handle_1 = esos_RegisterTimer(doublePressedTimer, 2000);
         }
         else if ( SW1_been_released ) {
             // Timer is already running, so it is a double press
-            esos_UnregisterTimer(esos_timer_handle_1);
-            timer_on = 0;
-            _st_esos_uiF14Data.b_SW1DoublePressed = true;
+            //esos_UnregisterTimer(esos_timer_handle_1);
+            //timer_on = 0;
+            //_st_esos_uiF14Data.b_SW1DoublePressed = true;
             _st_esos_uiF14Data.b_SW1Pressed = false;
         }
+        */
     }
     if (SW1_RELEASED) {
         SW1_been_released = true;
@@ -102,19 +106,23 @@ inline bool esos_uiF14_checkHW (void) {
 
     if (SW2_PRESSED) {
         DELAY_MS(30);
+        SW2_been_released = false;
+        _st_esos_uiF14Data.b_SW2Pressed = true;
+        /*
         if (timer_on != 1) {
             _st_esos_uiF14Data.b_SW2Pressed = true;
-            _st_esos_uiF14Data.b_SW2DoublePressed = false;
+            //_st_esos_uiF14Data.b_SW2DoublePressed = false;
             SW2_been_released = false;
-            timer_on = 1;
-            esos_timer_handle_2 = esos_RegisterTimer(doublePressedTimer, 2000);
+            //timer_on = 1;
+            //esos_timer_handle_2 = esos_RegisterTimer(doublePressedTimer, 2000);
         }
         else if ( SW2_been_released ) {
-            esos_UnregisterTimer(esos_timer_handle_2);
-            timer_on = 0;
-            _st_esos_uiF14Data.b_SW2DoublePressed = true;
+            //esos_UnregisterTimer(esos_timer_handle_2);
+            //timer_on = 0;
+            //_st_esos_uiF14Data.b_SW2DoublePressed = true;
             _st_esos_uiF14Data.b_SW2Pressed = false;
         }
+        */
     }
     if (SW2_RELEASED) {
         SW2_been_released = true;
@@ -152,7 +160,9 @@ inline bool esos_uiF14_isSW2Pressed (void) {
 }
 
 inline bool esos_uiF14_isSW2Released (void) {
-    return (_st_esos_uiF14Data.b_SW2Pressed==FALSE);
+    //return (_st_esos_uiF14Data.b_SW2Pressed==FALSE);
+    // TODO: Make this not use the hardware connection? It needs to be up-to-date somehow
+    return (SW2_RELEASED);
 }
 
 inline bool esos_uiF14_isSW2DoublePressed (void) {
@@ -365,9 +375,6 @@ void config_esos_uiF14() {
   SW1_CONFIG();
   SW2_CONFIG();
   SW3_CONFIG();
-  SW1_CONFIG2();
-  SW2_CONFIG2();
-  SW3_CONFIG2();
 
   // Configure rotary encoder
   CONFIG_RPGA();
