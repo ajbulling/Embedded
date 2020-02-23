@@ -17,7 +17,7 @@ char* processMode [1];
 char* numSamples [1];
 uint8_t input1;
 uint8_t input2;
-uint8_t pmode;
+uint8_t pmode = 0;
 bool continuousOutput = false;
 
 // ESOS task for Heartbeat LED3
@@ -34,7 +34,7 @@ ESOS_USER_TASK ( READ_ADC ) {
     ESOS_TASK_BEGIN();
     // Potentiometer is on channel 2
     ESOS_TASK_WAIT_ON_AVAILABLE_SENSOR(ESOS_SENSOR_CH02, ESOS_SENSOR_VREF_1V0);
-    ESOS_TASK_WAIT_SENSOR_QUICK_READ(pot_data);
+    ESOS_TASK_WAIT_SENSOR_READ(pot_data, pmode, ESOS_SENSOR_FORMAT_VOLTAGE);
     ESOS_SENSOR_CLOSE();
 
     // Output data from ADC
@@ -76,13 +76,14 @@ ESOS_USER_TASK ( QUICK_READ_TEST ) {
 
             ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
             ESOS_TASK_WAIT_ON_SEND_STRING(processMode);
+            ESOS_TASK_WAIT_ON_SEND_STRING("\n");
             ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
             input1 = atoi(processMode);
             // Don't ask for samples if one-shot mode is selected
             if (input1 != 1) {
                 ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-                ESOS_TASK_WAIT_ON_SEND_STRING("\nEnter the number of samples for the process. \n1) 2\n2) 4\n3) 8\n4) 16\n5) 32\n6) 64\n");
+                ESOS_TASK_WAIT_ON_SEND_STRING("Enter the number of samples for the process. \n1) 2\n2) 4\n3) 8\n4) 16\n5) 32\n6) 64\n");
                 ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
                 ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
@@ -99,9 +100,14 @@ ESOS_USER_TASK ( QUICK_READ_TEST ) {
                 * Then add 4 to move over to the upper 4 bits
                 * -2 + 4 = 2, so add 2 to input 1
                 */
-                input1 += 2;
-                pmode = 1 << input1; // bit-shift over to select processing mode
-                pmode |= input2; // bit-wise OR to select number of samples
+                if (input1 != 2) {
+                    input1 += 2;
+                    pmode = 1 << input1; // bit-shift over to select processing mode
+                    pmode |= input2; // bit-wise OR to select number of samples
+                }
+                else {
+                    pmode = input2;
+                }
             }
             else {
                 pmode = 0; // Process mode is 0 for one-shot
