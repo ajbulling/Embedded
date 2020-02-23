@@ -13,6 +13,9 @@
 #include "esos_pic24_sensor.c"
 
 uint16_t pot_data;
+char* numArray [5];
+char* processMode [1];
+char* numSamples [1];
 bool continuousOutput = false;
 
 // ESOS task for Heartbeat LED3
@@ -58,6 +61,34 @@ ESOS_USER_TASK ( QUICK_READ_TEST ) {
         if (continuousOutput) {
             esos_RegisterTask(READ_ADC);
             ESOS_TASK_WAIT_TICKS(1000);
+        }
+        if (esos_uiF14_isSW3Pressed()) {
+            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+            ESOS_TASK_WAIT_ON_SEND_STRING("Enter a processing mode. Press 1 for one-shot, ");
+            ESOS_TASK_WAIT_ON_SEND_STRING("2 for average, 3 for minimum, 4 for maximum, or 5 for median: ");
+            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+            ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+            ESOS_TASK_WAIT_ON_GET_STRING(processMode);
+            ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+
+            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+            ESOS_TASK_WAIT_ON_SEND_STRING(processMode);
+            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+            ESOS_TASK_WAIT_ON_SEND_STRING("\nEnter the number of samples for the process. \n1) 2\n2) 4\n3) 8\n4) 16\n5) 32\n6) 64\n");
+            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
+            ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
+            ESOS_TASK_WAIT_ON_GET_STRING(numSamples);
+            ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+
+            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+            ESOS_TASK_WAIT_ON_SEND_STRING(numSamples);
+            ESOS_TASK_WAIT_ON_SEND_STRING("\n");
+            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+
         }
         ESOS_TASK_YIELD();        
     }
