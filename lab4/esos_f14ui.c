@@ -136,7 +136,6 @@ inline bool esos_uiF14_checkHW (void) {
     if (SW3_RELEASED) {
         _st_esos_uiF14Data.b_SW3Pressed = false;
     }
-    // if (SW3_RELEASED) _st_esos_uiF14Data.b_SW3Pressed = false;
 
     if (RPG_TURN_CW()) _esos_uiF14_setRPGCounter(_st_esos_uiF14Data.u16_RPGCounter + 1);
     if (RPG_TURN_CCW()) _esos_uiF14_setRPGCounter(_st_esos_uiF14Data.u16_RPGCounter - 1);

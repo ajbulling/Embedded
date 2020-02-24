@@ -41,30 +41,29 @@ ESOS_USER_TASK ( READ_ADC ) {
     ESOS_TASK_END();
 }
 
-ESOS_USER_TASK ( QUICK_READ_TEST ) {
+ESOS_USER_TASK ( POT_INTERFACE ) {
     ESOS_TASK_BEGIN();
-    while ( TRUE ){
-        esos_uiF14_checkHW();
+    while (true) {
+        esos_uiF14_checkHW(); // Update switch states
         if (esos_uiF14_isSW1Pressed()) {
-            continuousOutput = 0;
+            continuousOutput = 0; // Stop printing continuously if sw1 pressed
             esos_RegisterTask(READ_ADC);
         }
         if (esos_uiF14_isSW2Pressed()) {
-            // Had to change this to make it tied to the hardware 
-            // or it wouldn't get updated without a call to checkHW
             ESOS_TASK_WAIT_UNTIL_UIF14_SW2_RELEASED();
-            continuousOutput = !continuousOutput;
+            continuousOutput = !continuousOutput; // Print continuously after sw2 released
         }
         if (continuousOutput) {
             esos_RegisterTask(READ_ADC);
-            ESOS_TASK_WAIT_TICKS(1000);
+            ESOS_TASK_WAIT_TICKS(1000); // Prints potentiometer voltage every second
         }
-        ESOS_TASK_YIELD();        
+        ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
 }
 
 void user_init() {
+    // Configure HW
     CONFIG_POT();
     
     LED1_CONFIG();
@@ -75,7 +74,8 @@ void user_init() {
     SW2_CONFIG();
     SW3_CONFIG();
 
+    // Register ESOS tasks
     esos_RegisterTask( LED3_blink );
-    esos_RegisterTask( QUICK_READ_TEST );
+    esos_RegisterTask( POT_INTERFACE );
 }
 

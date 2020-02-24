@@ -12,8 +12,6 @@ bool esos_sensor_is_converting_hw(){
 
 uint16_t esos_sensor_getvalue_u16_hw(){
     // refer to adc7scan1 from micro code repo
-    //uint16_t* au16_adcHWBuff = (uint16_t*) &ADC1BUF0;
-    //return *au16_adcHWBuff;
     return ADC1BUF0;
 }
 
