@@ -15,6 +15,7 @@
 uint16_t temp_data;
 char* processMode [1];
 char* numSamples [1];
+char temp_string[5]; // Temperature char array
 uint8_t input1; // Process mode (integer)
 uint8_t input2; // Number of samples (integer)
 uint8_t pmode = 0; // Actual process mode argument (must be calculated)
@@ -43,10 +44,13 @@ ESOS_USER_TASK ( READ_ADC ) {
     pu32_out = (uint32_t)temp_data * 1000; // Cast to uint32_t to prevent overflow
     pu32_out = (pu32_out - 424000) / 625;
     pu32_out /= 100;
+    // Convert integer to char array, essentially itoa()
+    snprintf(temp_string, sizeof(temp_string), "%d", pu32_out);
 
     // Output data from ADC
     ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-    ESOS_TASK_WAIT_ON_SEND_UINT32_AS_HEX_STRING(pu32_out);
+    ESOS_TASK_WAIT_ON_SEND_STRING(temp_string);
+    ESOS_TASK_WAIT_ON_SEND_STRING(" degrees Celsius");
     ESOS_TASK_WAIT_ON_SEND_UINT8('\n');
     ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
