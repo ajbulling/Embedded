@@ -77,3 +77,13 @@ For Microchip dsPIC33EP512GP806
 #define CONFIG_TEMP() CONFIG_RB3_AS_ANALOG()
 #define TEMP _RB3
 
+// Configure LCD
+#define CONFIG_LCD() { \
+    CONFIG_RC12_AS_DIG_OUTPUT(); \
+    CONFIG_RD10_AS_DIG_OUTPUT(); \
+    CONFIG_RD11_AS_DIG_OUTPUT(); \
+}
+#define LCD_RS (_LATC12) // Register select pin
+#define LCD_E (_LATD10) // Enable pin
+#define LCD_RW (_LATD11) // Read/write pin
+
