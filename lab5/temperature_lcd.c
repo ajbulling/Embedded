@@ -13,6 +13,8 @@
 #include "esos_pic24_sensor.c"
 #include "esos_lcd44780.h"
 #include "../lib/src/esos_lcd44780.c"
+#include "esos_pic24_lcd44780.h"
+#include "esos_pic24_lcd44780.c"
 
 uint16_t temp_data;
 char* processMode [1];

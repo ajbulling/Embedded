@@ -33,7 +33,7 @@
  */
  
 /*** I N C L U D E S *************************************************/
-#include "esos_pic24_lcd.h"
+#include "esos_pic24_lcd44780.h"
 
 /*** T H E   C O D E *************************************************/
 void __esos_lcd44780_pic24_config ( void )
@@ -60,6 +60,7 @@ uint8_t __esos_lcd44780_pic24_getDataPins( void ) {
 	// write the hardware-specific code to read the appropriate data pins
 	// and create the uint8 data to return to the caller
     uint8_t data = 0;
+
     data |= LCD_D0;
     data |= LCD_D1 << 1;
     data |= LCD_D2 << 2;
@@ -68,6 +69,7 @@ uint8_t __esos_lcd44780_pic24_getDataPins( void ) {
     data |= LCD_D5 << 5;
     data |= LCD_D6 << 6;
     data |= LCD_D7 << 7;
+
     return data;
 }
 
@@ -80,5 +82,5 @@ void __esos_lcd44780_pic24_configDataPinsAsInput( void ) {
 void __esos_lcd44780_pic24_configDataPinsAsOutput( void ) {
 	// write the hardware-specific code to set the LCD character module
 	// data pins to be "outputs" to prepare for a write to the LCD module
-    CONIFG_LCD_OUTPUT();
+    CONFIG_LCD_OUTPUT();
 }
