@@ -1,4 +1,4 @@
-/*
+ *
  * "Copyright (c) 2013 Robert B. Reese, Bryan A. Jones, J. W. Bruce ("AUTHORS")"
  * All rights reserved.
  * (R. Reese, reese_AT_ece.msstate.edu, Mississippi State University)
@@ -33,7 +33,7 @@
  */
  
 #include "esos_lcd44780.h"
-#include "esos_pic24_lcd44780.h"
+#include "../../lab5/esos_pic24_lcd44780.h"
 #include <esos.h>
 #include <stdlib.h>
 
@@ -177,14 +177,14 @@ void esos_lcd44780_configDisplay( void )
 
 void esos_lcd44780_init( void )
 {
-	// Set up the hardware aspects of the HWxxx interface of the LCD module service
+	// Set up the hardware aspects of the PIC24 interface of the LCD module service
 	//    direction, thresholds, etc
-	__esos_lcd44780_hw_configDataPinsAsOutput();
-	__ESOS_LCD44780_HW_SET_RW_WRITE();
-	__ESOS_LCD44780_HW_SET_RS_REGISTERS();
+	__esos_lcd44780_pic24_configDataPinsAsOutput();
+	__ESOS_LCD44780_PIC24_SET_RW_WRITE;
+	__ESOS_LCD44780_PIC24_SET_RS_REGISTERS;
 	
-	// give HW specific code a chance to do anything else to init/config
-	__esos_lcd44780_hw_config();
+	// give PIC24 specific code a chance to do anything else to init/config
+	__esos_lcd44780_pic24_config();
 
 	// install our LCD housekeeping task into the scheduler
 	esos_RegisterTask( __esos_lcd44780_service );
@@ -216,8 +216,6 @@ void esos_lcd44780_setCursor( uint8_t u8_row, uint8_t u8_column )
 {
     // Move cursor to (u8_row,u8_column) without changing memory buffer or the display
 	// TODO:  Write hardware-independent code here
-	esos_lcd44780_setCursor(u8_row, u8_column);
-	esos_lcd44780_vars.b_cursorPositionNeedsUpdate = TRUE;
 }
 
 void esos_lcd44780_writeChar( uint8_t u8_row, uint8_t u8_column, uint8_t u8_data )
@@ -235,9 +233,6 @@ void esos_lcd44780_writeBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_
 {
     // Write u8_bufflen characters from pu8_data to (u8_row,u8_column)
 	// TODO:  Write hardware-independent code here
-	for (int i = 0; i < u8_bufflen; i++) {
-		esos_lcd44780_writeChar(pu8_data[i]);
-	}
 }
 
 void esos_lcd44780_getBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_data, uint8_t u8_bufflen )
@@ -339,18 +334,18 @@ ESOS_CHILD_TASK(__esos_lcd44780_read_u8, uint8_t *pu8_data, BOOL b_isData, BOOL 
 	}
 
 	if( b_isData ){
-        __ESOS_LCD44780_HW_SET_RS_DATA();
+        __ESOS_LCD44780_PIC24_SET_RS_DATA;
     } else {
-        __ESOS_LCD44780_HW_SET_RS_REGISTERS();
+        __ESOS_LCD44780_PIC24_SET_RS_REGISTERS;
     }
     
-    __ESOS_LCD44780_HW_SET_RW_READ();
-	__esos_lcd44780_hw_configDataPinsAsInput();
+    __ESOS_LCD44780_PIC24_SET_RW_READ;
+	__esos_lcd44780_pic24_configDataPinsAsInput();
 
-	__ESOS_LCD44780_HW_SET_E_HIGH();
+	__ESOS_LCD44780_PIC24_SET_E_HIGH;
 	ESOS_TASK_YIELD();
-	*pu8_data = __esos_lcd44780_hw_getDataPins();
-	__ESOS_LCD44780_HW_SET_E_LOW();
+	*pu8_data = __esos_lcd44780_pic24_getDataPins();
+	__ESOS_LCD44780_PIC24_SET_E_LOW;
 	ESOS_TASK_YIELD();
 
 	ESOS_TASK_END();
@@ -368,19 +363,19 @@ ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b
 	}
 
 	if( b_isData ){
-        __ESOS_LCD44780_HW_SET_RS_DATA();
+        __ESOS_LCD44780_PIC24_SET_RS_DATA;
     } else {
-        __ESOS_LCD44780_HW_SET_RS_REGISTERS();
+        __ESOS_LCD44780_PIC24_SET_RS_REGISTERS;
     }
 	
-    __ESOS_LCD44780_HW_SET_RW_WRITE();
-	__esos_lcd44780_hw_configDataPinsAsOutput();
+    __ESOS_LCD44780_PIC24_SET_RW_WRITE;
+	__esos_lcd44780_pic24_configDataPinsAsOutput();
     
-    __esos_lcd44780_hw_setDataPins( u8_data );
+    __esos_lcd44780_pic24_setDataPins( u8_data );
 
-	__ESOS_LCD44780_HW_SET_E_HIGH();
+	__ESOS_LCD44780_PIC24_SET_E_HIGH;
 	ESOS_TASK_YIELD();
-	__ESOS_LCD44780_HW_SET_E_LOW();
+	__ESOS_LCD44780_PIC24_SET_E_LOW;
 	ESOS_TASK_YIELD();
 
 	ESOS_TASK_END();
@@ -388,18 +383,18 @@ ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b
 
 ESOS_CHILD_TASK( __esos_task_wait_lcd44780_while_busy  )
 {
-    static BOOL b_hw_lcd_isBusy = FALSE;
+    static BOOL b_pic24_lcd_isBusy = FALSE;
     
     ESOS_TASK_BEGIN();
     
 	while ( TRUE ) {
-		__esos_lcd44780_hw_configDataPinsAsInput();
-		__ESOS_LCD44780_HW_SET_RS_REGISTERS();
-		__ESOS_LCD44780_HW_SET_RW_READ();
-		__ESOS_LCD44780_HW_SET_E_HIGH();
-		b_hw_lcd_isBusy = (__esos_lcd44780_hw_getDataPins() & 0x80);
-		__ESOS_LCD44780_HW_SET_E_LOW();
-        if ( b_hw_lcd_isBusy ){
+		__esos_lcd44780_pic24_configDataPinsAsInput();
+		__ESOS_LCD44780_PIC24_SET_RS_REGISTERS;
+		__ESOS_LCD44780_PIC24_SET_RW_READ;
+		__ESOS_LCD44780_PIC24_SET_E_HIGH;
+		b_pic24_lcd_isBusy = (__esos_lcd44780_pic24_getDataPins() & 0x80);
+		__ESOS_LCD44780_PIC24_SET_E_LOW;
+        if ( b_pic24_lcd_isBusy ){
             ESOS_TASK_YIELD();
         } else {
             ESOS_TASK_EXIT();
