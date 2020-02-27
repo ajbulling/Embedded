@@ -216,6 +216,8 @@ void esos_lcd44780_setCursor( uint8_t u8_row, uint8_t u8_column )
 {
     // Move cursor to (u8_row,u8_column) without changing memory buffer or the display
 	// TODO:  Write hardware-independent code here
+	esos_lcd44780_setCursor(u8_row, u8_column);
+	esos_lcd44780_vars.b_cursorPositionNeedsUpdate = TRUE;
 }
 
 void esos_lcd44780_writeChar( uint8_t u8_row, uint8_t u8_column, uint8_t u8_data )
@@ -233,6 +235,9 @@ void esos_lcd44780_writeBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_
 {
     // Write u8_bufflen characters from pu8_data to (u8_row,u8_column)
 	// TODO:  Write hardware-independent code here
+	for (int i = 0; i < u8_bufflen; i++) {
+		esos_lcd44780_writeChar(pu8_data[i]);
+	}
 }
 
 void esos_lcd44780_getBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_data, uint8_t u8_bufflen )
