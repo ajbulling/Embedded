@@ -87,6 +87,16 @@ For Microchip dsPIC33EP512GP806
 #define LCD_E (_LATD10) // Enable pin
 #define LCD_RW (_LATD11) // Read/write pin
 
+// Data I/O pins
+#define LCD_D0 (_LATE0)
+#define LCD_D1 (_LATE1)
+#define LCD_D2 (_LATE2)
+#define LCD_D3 (_LATE3)
+#define LCD_D4 (_LATE4)
+#define LCD_D5 (_LATE5)
+#define LCD_D6 (_LATE6)
+#define LCD_D7 (_LATE7)
+
 // Configure LCD data pins as input, pins must be fixed high or low per
 // datasheet
 #define CONFIG_LCD_INPUT() { \
