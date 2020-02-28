@@ -232,16 +232,22 @@ uint8_t esos_lcd44780_getChar( uint8_t u8_row, uint8_t u8_column )
 
 void esos_lcd44780_writeBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_data, uint8_t u8_bufflen )
 {
+    // Declaring int outside of for loop, because xc16-gcc uses a version of
+    // C so old you can't declare integers inside for loops apparently
+    int i;
     // Write u8_bufflen characters from pu8_data to (u8_row,u8_column)
-	for (int i = 0; i < u8_bufflen; i++) {
+	for (i = 0; i < u8_bufflen; i++) {
 		esos_lcd44780_writeChar(u8_row, u8_column+i, pu8_data[i]);
 	}
 }
 
 void esos_lcd44780_getBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_data, uint8_t u8_bufflen )
 {
+    // Declaring int outside of for loop, because xc16-gcc uses a version of
+    // C so old you can't declare integers inside for loops apparently
+    int i;
     // Return pu8_data with u8_bufflen characters currently displayed beginning at (u8_row,u8_column)
-	for (int i = 0; i < u8_bufflen; i++) {
+	for (i = 0; i < u8_bufflen; i++) {
 		pu8_data[i] = esos_lcd44780_getChar(u8_row, u8_column+i);
 	}
 	return pu8_data;
@@ -249,8 +255,11 @@ void esos_lcd44780_getBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_da
 
 void esos_lcd44780_writeString( uint8_t u8_row, uint8_t u8_column, char *psz_data )
 {
+    // Declaring int outside of for loop, because xc16-gcc uses a version of
+    // C so old you can't declare integers inside for loops apparently
+    int i;
     // Write zero-terminated string psz_data to location starting at (u8_row,u8_column)
-	for (int i = 0; psz_data[i] == '\0'; i++) {
+	for (i = 0; psz_data[i] == '\0'; i++) {
 		esos_lcd44780_writeChar(u8_row, u8_column+i, (int)psz_data[i]);
 	}
 }
