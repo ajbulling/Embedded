@@ -77,10 +77,12 @@ void __esos_lcd44780_pic24_configDataPinsAsInput( void ) {
 	// write the hardware-specific code to set the LCD character module
 	// data pins to be "inputs" to prepare for a read of the LCD module
     CONFIG_LCD_INPUT();
+	__ESOS_LCD44780_HW_SET_RW_READ()
 }
 
 void __esos_lcd44780_pic24_configDataPinsAsOutput( void ) {
 	// write the hardware-specific code to set the LCD character module
 	// data pins to be "outputs" to prepare for a write to the LCD module
     CONFIG_LCD_OUTPUT();
+	__ESOS_LCD44780_HW_SET_RW_WRITE();
 }
