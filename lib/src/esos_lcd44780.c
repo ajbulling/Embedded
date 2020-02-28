@@ -302,14 +302,26 @@ BOOL esos_lcd44780_getDisplayVisible( void )
 
 void esos_lcd44780_setCustomChar( uint8_t u8_charSlot, uint8_t *pu8_charData )
 {
+    // Declaring int outside of for loop, because xc16-gcc uses a version of
+    // C so old you can't declare integers inside for loops apparently
+    int i;
+
     // Set custom character memory for u8_charSlot to data in pu8_charData
-	esos_lcd44780_vars.ast_customChar[u8_charSlot] = pu8_charData;
+    for (i = 0; i < ESOS_LCD44780_NUM_CUSTOM_CHARS; i++) {
+        esos_lcd44780_vars.ast_customChar[u8_charSlot].au8_data[i] = pu8_charData;
+    }
 }
 
 void esos_lcd44780_getCustomChar( uint8_t u8_charSlot, uint8_t *pu8_charData )
 {
+    // Declaring int outside of for loop, because xc16-gcc uses a version of
+    // C so old you can't declare integers inside for loops apparently
+    int i;
+
     // Return pu8_charData with custom character memory for u8_charSlot
-	pu8_charData = esos_lcd44780_vars.ast_customChar[u8_charSlot];
+    for (i = 0; i < ESOS_LCD44780_NUM_CUSTOM_CHARS; i++) {
+	    pu8_charData = esos_lcd44780_vars.ast_customChar[u8_charSlot].au8_data[i];
+    }
 }
 
 BOOL esos_lcd44780_isCurrent( void )
