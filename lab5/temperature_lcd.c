@@ -24,13 +24,14 @@ uint8_t input1; // Process mode (integer)
 uint8_t input2; // Number of samples (integer)
 uint8_t pmode = 0; // Actual process mode argument (must be calculated)
 bool continuousOutput = false;
+bool displayPot = true;
 
 // ESOS task for Heartbeat LED3
 ESOS_USER_TASK ( LED3_blink ) {
     ESOS_TASK_BEGIN();
     while ( TRUE ){
         esos_uiF14_toggleLED3();
-        ESOS_TASK_WAIT_TICKS(250);
+        ESOS_TASK_WAIT_TICKS(500);
     }
     ESOS_TASK_END();
 }
@@ -58,6 +59,20 @@ ESOS_USER_TASK ( READ_ADC ) {
     ESOS_TASK_WAIT_ON_SEND_UINT8('\n');
     ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
 
+    ESOS_TASK_END();
+}
+
+ESOS_USER_TASK( LCD_INTERFACE ) {
+    ESOS_TASK_BEGIN();
+    ESOS_TASK_WAIT_TICKS(1000);
+    esos_lcd44780_configDisplay();
+    esos_lcd44780_clearScreen();
+    esos_lcd44780_setCursorDisplay(false);
+    esos_lcd44780_setCursorBlink(false);
+    while (true) {
+        esos_lcd44780_writeString(0, 0, "testing\0");
+        ESOS_TASK_WAIT_TICKS(250);
+    }
     ESOS_TASK_END();
 }
 
@@ -132,6 +147,7 @@ ESOS_USER_TASK ( TEMP_INTERFACE ) {
                 pmode = 0; // Process mode is 0 for one-shot
             }
         }
+        ESOS_TASK_WAIT_TICKS(200);
         ESOS_TASK_YIELD();
     }
     ESOS_TASK_END();
@@ -140,17 +156,13 @@ ESOS_USER_TASK ( TEMP_INTERFACE ) {
 void user_init() {
     // Config HW
     CONFIG_POT();
-    
-    LED1_CONFIG();
-    LED2_CONFIG();
+    CONFIG_TEMP();
     LED3_HB_CONFIG();
-
-    SW1_CONFIG();
-    SW2_CONFIG();
     SW3_CONFIG();
+    esos_lcd44780_init();
 
     // Register ESOS tasks
     esos_RegisterTask( LED3_blink );
-    esos_RegisterTask( TEMP_INTERFACE );
+    esos_RegisterTask( LCD_INTERFACE );
 }
 

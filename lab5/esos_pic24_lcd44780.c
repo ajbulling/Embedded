@@ -46,7 +46,7 @@ void __esos_lcd44780_pic24_config ( void )
 void __esos_lcd44780_pic24_setDataPins( uint8_t u8_data) {
 	// write the hardware-specific code to take the u8_data passed in
 	// and place it on the appropriate data pins
-    LCD_D0 = u8_data & 0x01;
+    LCD_D0 = u8_data & 0b00000001;
     LCD_D1 = (u8_data & 0x02) >> 1;
     LCD_D2 = (u8_data & 0x04) >> 2;
     LCD_D3 = (u8_data & 0x08) >> 3;

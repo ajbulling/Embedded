@@ -136,6 +136,7 @@ ESOS_USER_TASK ( TEMP_INTERFACE ) {
 void user_init() {
     // Config HW
     CONFIG_POT();
+    CONFIG_TEMP();
     
     LED1_CONFIG();
     LED2_CONFIG();

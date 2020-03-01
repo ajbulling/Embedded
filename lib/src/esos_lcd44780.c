@@ -291,7 +291,7 @@ void esos_lcd44780_writeString( uint8_t u8_row, uint8_t u8_column, char *psz_dat
     // C so old you can't declare integers inside for loops apparently
     int i;
     // Write zero-terminated string psz_data to location starting at (u8_row,u8_column)
-	for (i = 0; psz_data[i] == '\0'; i++) {
+	for (i = 0; psz_data[i] != '\0'; i++) {
 		DELAY_US(20);
 		if( u8_column > ESOS_LCD44780_MEM_WIDTH ) {
 			u8_row++;
