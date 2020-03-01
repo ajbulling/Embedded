@@ -215,8 +215,22 @@ void esos_lcd44780_setCursorHome( void )
 void esos_lcd44780_setCursor( uint8_t u8_row, uint8_t u8_column )
 {
     // Move cursor to (u8_row,u8_column) without changing memory buffer or the display
-	esos_lcd44780_vars.u8_cursorRow = u8_row;
-	esos_lcd44780_vars.u8_cursorCol = u8_column;
+	static uint8_t u8_address;
+
+	//set cursor to row 0 
+	if( u8_row == 0 ) {
+		u8_address = u8_column | ESOS_LCD44780_CMD_SET_DDRAM_ADDR;
+		__ESOS_LCD44780_PIC24_SET_RS_REGISTERS;
+		__esos_lcd44780_pic24_configDataPinsAsOutput();
+		__esos_lcd44780_pic24_setDataPins( u8_address );
+	}
+	//set cursor to row 1
+	else if( u8_row == 1 ) {
+		u8_address = u8_column | ESOS_LCD44780_CMD_SET_DDRAM_ADDR;
+		__ESOS_LCD44780_PIC24_SET_RS_REGISTERS;
+		__esos_lcd44780_pic24_configDataPinsAsOutput();
+		__esos_lcd44780_pic24_setDataPins( u8_address + 0x40 );
+	}
 }
 
 void esos_lcd44780_writeChar( uint8_t u8_row, uint8_t u8_column, uint8_t u8_data )
@@ -237,7 +251,17 @@ void esos_lcd44780_writeBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_
     int i;
     // Write u8_bufflen characters from pu8_data to (u8_row,u8_column)
 	for (i = 0; i < u8_bufflen; i++) {
-		esos_lcd44780_writeChar(u8_row, u8_column+i, pu8_data[i]);
+		DELAY_US(20);
+		if( u8_column > ESOS_LCD44780_MEM_WIDTH ) {
+			u8_row++;
+			u8_column = 0;
+		}
+		// exits loop if u8_row is larger than the display's capacity
+		if( u8_row >= 2 ) {
+			i = u8_bufflen;
+		}
+		esos_lcd44780_writeChar(u8_row, u8_column, pu8_data[i]);
+		u8_column++;
 	}
 }
 
@@ -248,9 +272,17 @@ void esos_lcd44780_getBuffer( uint8_t u8_row, uint8_t u8_column, uint8_t *pu8_da
     int i;
     // Return pu8_data with u8_bufflen characters currently displayed beginning at (u8_row,u8_column)
 	for (i = 0; i < u8_bufflen; i++) {
-		pu8_data[i] = esos_lcd44780_getChar(u8_row, u8_column+i);
+		if( u8_column > ESOS_LCD44780_MEM_WIDTH ) {
+			u8_row++;
+			u8_column = 0;
+		}
+		// exits loop if u8_row is larger than the display's capacity
+		if( u8_row >= 2 ) {
+			i = u8_bufflen;
+		}
+		pu8_data[i] = esos_lcd44780_getChar(u8_row, u8_column);
+		u8_column++;
 	}
-	return pu8_data;
 }
 
 void esos_lcd44780_writeString( uint8_t u8_row, uint8_t u8_column, char *psz_data )
@@ -260,26 +292,37 @@ void esos_lcd44780_writeString( uint8_t u8_row, uint8_t u8_column, char *psz_dat
     int i;
     // Write zero-terminated string psz_data to location starting at (u8_row,u8_column)
 	for (i = 0; psz_data[i] == '\0'; i++) {
-		esos_lcd44780_writeChar(u8_row, u8_column+i, (int)psz_data[i]);
+		DELAY_US(20);
+		if( u8_column > ESOS_LCD44780_MEM_WIDTH ) {
+			u8_row++;
+			u8_column = 0;
+		}
+		if( u8_row >= 2 ){
+			break;
+		}
+		esos_lcd44780_writeChar(u8_row, u8_column, psz_data[i]);
+		u8_column++;
 	}
 }
 
 void esos_lcd44780_setCursorDisplay( BOOL u8_state )
 {
     // Set cursor display state to u8_state
-	esos_lcd44780_vars.b_cursorShown = u8_state;
+	esos_lcd44780_vars.b_displayVisible = u8_state;
+	esos_lcd44780_vars.b_displayVisibleNeedsUpdate = TRUE;
 }
 
 BOOL esos_lcd44780_getCursorDisplay( void )
 {
     // Return cursor display state
-	return esos_lcd44780_vars.b_cursorShown;
+	return esos_lcd44780_vars.b_displayVisible;
 }
 
 void esos_lcd44780_setCursorBlink( BOOL u8_state )
 {
     // Set cursor blink state to u8_state
 	esos_lcd44780_vars.b_cursorBlink = u8_state;
+	esos_lcd44780_vars.b_cursorBlinkNeedsUpdate = TRUE;
 }
 
 BOOL esos_lcd44780_getCursorBlink( void )
@@ -292,6 +335,7 @@ void esos_lcd44780_setDisplayVisible( BOOL u8_state )
 {
     // Set display visible state to u8_state
 	esos_lcd44780_vars.b_displayVisible = u8_state;
+	esos_lcd44780_vars.b_displayVisibleNeedsUpdate = TRUE;
 }
 
 BOOL esos_lcd44780_getDisplayVisible( void )
@@ -308,20 +352,16 @@ void esos_lcd44780_setCustomChar( uint8_t u8_charSlot, uint8_t *pu8_charData )
 
     // Set custom character memory for u8_charSlot to data in pu8_charData
     for (i = 0; i < ESOS_LCD44780_NUM_CUSTOM_CHARS; i++) {
-        esos_lcd44780_vars.ast_customChar[u8_charSlot].au8_data[i] = pu8_charData;
+        esos_lcd44780_vars.ast_customChar[u8_charSlot].au8_data[i] = pu8_charData[i] & 0x1F;
     }
+	esos_lcd44780_vars.ab_customCharNeedsUpdate[u8_charSlot] = TRUE;
 }
 
 void esos_lcd44780_getCustomChar( uint8_t u8_charSlot, uint8_t *pu8_charData )
 {
-    // Declaring int outside of for loop, because xc16-gcc uses a version of
-    // C so old you can't declare integers inside for loops apparently
-    int i;
-
     // Return pu8_charData with custom character memory for u8_charSlot
-    for (i = 0; i < ESOS_LCD44780_NUM_CUSTOM_CHARS; i++) {
-	    pu8_charData = esos_lcd44780_vars.ast_customChar[u8_charSlot].au8_data[i];
-    }
+
+	pu8_charData = esos_lcd44780_vars.ast_customChar[u8_charSlot].au8_data;
 }
 
 BOOL esos_lcd44780_isCurrent( void )
