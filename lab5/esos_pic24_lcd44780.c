@@ -46,16 +46,7 @@ void __esos_lcd44780_pic24_config ( void )
 void __esos_lcd44780_pic24_setDataPins( uint8_t u8_data) {
 	// write the hardware-specific code to take the u8_data passed in
 	// and place it on the appropriate data pins
-    /*
-    LCD_D0 = u8_data & 0x01;
-    LCD_D1 = (u8_data & 0x02) >> 1;
-    LCD_D2 = (u8_data & 0x04) >> 2;
-    LCD_D3 = (u8_data & 0x08) >> 3;
-    LCD_D4 = (u8_data & 0x10) >> 4;
-    LCD_D5 = (u8_data & 0x20) >> 5;
-    LCD_D6 = (u8_data & 0x40) >> 6;
-    LCD_D7 = (u8_data & 0x80) >> 7;
-    */
+
     if((u8_data >> 0) & 0x01) __ESOS_LCD44780_PIC24_SET_D0;
     else __ESOS_LCD44780_PIC24_CLEAR_D0;
     if((u8_data >> 1) & 0x01) __ESOS_LCD44780_PIC24_SET_D1;
@@ -77,20 +68,7 @@ void __esos_lcd44780_pic24_setDataPins( uint8_t u8_data) {
 uint8_t __esos_lcd44780_pic24_getDataPins( void ) {
 	// write the hardware-specific code to read the appropriate data pins
 	// and create the uint8 data to return to the caller
-    /*
-    uint8_t data = 0;
-
-    data |= LCD_D0;
-    data |= LCD_D1 << 1;
-    data |= LCD_D2 << 2;
-    data |= LCD_D3 << 3;
-    data |= LCD_D4 << 4;
-    data |= LCD_D5 << 5;
-    data |= LCD_D6 << 6;
-    data |= LCD_D7 << 7;
-
-    return data;
-    */
+    
     uint8_t u8_return_data = 0x00;
     u8_return_data = (u8_return_data & 0) | __ESOS_LCD44780_PIC24_GET_D0;
     u8_return_data = (u8_return_data & 1) | __ESOS_LCD44780_PIC24_GET_D1;
