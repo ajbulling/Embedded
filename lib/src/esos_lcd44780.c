@@ -93,9 +93,9 @@ ESOS_USER_TASK( __esos_lcd44780_service )
 
 	// Send startup sequence from datasheet
 	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NIBBLE(0x28);
-	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x10);
-	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x0f);
-	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x06);
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NIBBLE(0x10);
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NIBBLE(0x0f);
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NIBBLE(0x06);
 #endif
 
 	while(TRUE) {
@@ -422,7 +422,7 @@ ESOS_CHILD_TASK(__esos_lcd44780_read_u8, uint8_t *pu8_data, BOOL b_isData, BOOL 
 
 	__ESOS_LCD44780_PIC24_SET_E_HIGH;
 	ESOS_TASK_YIELD();
-	*pu8_data = __esos_lcd44780_pic24_getDataPins();
+	*pu8_data |= __esos_lcd44780_pic24_getDataPins();
 	__ESOS_LCD44780_PIC24_SET_E_LOW;
 	ESOS_TASK_YIELD();
 
@@ -450,6 +450,7 @@ ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b
 	__esos_lcd44780_pic24_configDataPinsAsOutput();
 
     // Send bottom 4 bits in nibble mode
+    /*
     if ( b_useNibbleMode) {
         __esos_lcd44780_pic24_setDataPins(u8_data << 4);
         __ESOS_LCD44780_PIC24_SET_E_HIGH;
@@ -457,6 +458,7 @@ ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b
         __ESOS_LCD44780_PIC24_SET_E_LOW;
         ESOS_TASK_YIELD();
     }
+    */
 
     // Send top 4 bits in nibble mode, or everything in normal mode
     __esos_lcd44780_pic24_setDataPins( u8_data );
@@ -464,6 +466,15 @@ ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b
     ESOS_TASK_YIELD();
 	__ESOS_LCD44780_PIC24_SET_E_LOW;
     ESOS_TASK_YIELD();
+
+    // Send bottom 4 bits in nibble mode
+    if ( b_useNibbleMode) {
+        __esos_lcd44780_pic24_setDataPins(u8_data << 4);
+        __ESOS_LCD44780_PIC24_SET_E_HIGH;
+        ESOS_TASK_YIELD();
+        __ESOS_LCD44780_PIC24_SET_E_LOW;
+        ESOS_TASK_YIELD();
+    }
 
 	ESOS_TASK_END();
 }
@@ -480,6 +491,7 @@ ESOS_CHILD_TASK( __esos_task_wait_lcd44780_while_busy  )
 		__ESOS_LCD44780_PIC24_SET_RW_READ;
 		__ESOS_LCD44780_PIC24_SET_E_HIGH;
         ESOS_TASK_WAIT_TICKS(1);
+        //__ESOS_LCD44780_PIC24_SET_E_LOW;
 
 #ifndef USE_NIBBLE_MODE
 		b_pic24_lcd_isBusy = (__esos_lcd44780_pic24_getDataPins() & 0x80);

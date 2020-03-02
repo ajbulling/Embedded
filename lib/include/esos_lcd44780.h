@@ -46,6 +46,7 @@
 
 /* D E F I N E S ************************************************************/
 #define ESOS_TASK_WAIT_ON_LCD44780_REFRESH() ESOS_TASK_WAIT_UNTIL(esos_lcd44780_isCurrent())
+// Uncomment this to use nibble mode
 //#define USE_NIBBLE_MODE
 
 #define ESOS_LCD44780_CMD_CLEAR_DISPLAY          0b00000001
