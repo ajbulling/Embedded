@@ -16,15 +16,25 @@
 #include "esos_pic24_lcd44780.h"
 #include "esos_pic24_lcd44780.c"
 
-uint16_t temp_data;
+uint16_t temp_data; // Temporary ADC data
 char* processMode [1];
 char* numSamples [1];
-char temp_string[5]; // Temperature char array
+char temp_string[10]; // Temporary char array
 uint8_t input1; // Process mode (integer)
 uint8_t input2; // Number of samples (integer)
 uint8_t pmode = 0; // Actual process mode argument (must be calculated)
 bool continuousOutput = false;
-bool displayPot = true;
+bool displayTemp = false;
+
+uint8_t temp_level; // Temp stands for temperature
+uint8_t temp_bar[8][8] = { {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F},   // 1/8 full block
+                                              {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F},   // 1/4 full block
+                                              {0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F, 0x1F},   // 3/8 full block
+                                              {0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F, 0x1F, 0x1F},   // Half full block
+                                              {0x00, 0x00, 0x00, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F},   // 5/8 full block
+                                              {0x00, 0x00, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F},   // 3/4 full block
+                                              {0x00, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F},   // 7/8 full block
+                                              {0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F, 0x1F} };  // Full block
 
 // ESOS task for Heartbeat LED3
 ESOS_USER_TASK ( LED3_blink ) {
@@ -36,32 +46,6 @@ ESOS_USER_TASK ( LED3_blink ) {
     ESOS_TASK_END();
 }
 
-ESOS_USER_TASK ( READ_ADC ) {
-    ESOS_TASK_BEGIN();
-    // Temperature sensor is on channel 3
-    ESOS_TASK_WAIT_ON_AVAILABLE_SENSOR(ESOS_SENSOR_CH03, ESOS_SENSOR_VREF_1V0);
-    ESOS_TASK_WAIT_SENSOR_READ(temp_data, pmode, ESOS_SENSOR_FORMAT_VOLTAGE);
-    ESOS_SENSOR_CLOSE();
-
-    uint32_t pu32_out;
-
-    // Convert mV to degrees Celsius per datasheet
-    pu32_out = (uint32_t)temp_data * 1000; // Cast to uint32_t to prevent overflow
-    pu32_out = (pu32_out - 424000) / 625;
-    pu32_out /= 100;
-    // Convert integer to char array, essentially itoa()
-    snprintf(temp_string, sizeof(temp_string), "%d", pu32_out);
-
-    // Output data from ADC
-    ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-    ESOS_TASK_WAIT_ON_SEND_STRING(temp_string);
-    ESOS_TASK_WAIT_ON_SEND_STRING(" degrees Celsius");
-    ESOS_TASK_WAIT_ON_SEND_UINT8('\n');
-    ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
-
-    ESOS_TASK_END();
-}
-
 ESOS_USER_TASK( LCD_INTERFACE ) {
     ESOS_TASK_BEGIN();
     ESOS_TASK_WAIT_TICKS(1000);
@@ -70,85 +54,89 @@ ESOS_USER_TASK( LCD_INTERFACE ) {
     esos_lcd44780_setCursorDisplay(false);
     esos_lcd44780_setCursorBlink(false);
     while (true) {
-        esos_lcd44780_writeString(0, 0, "testing\0");
-        ESOS_TASK_WAIT_TICKS(250);
-    }
-    ESOS_TASK_END();
-}
-
-ESOS_USER_TASK ( TEMP_INTERFACE ) {
-    ESOS_TASK_BEGIN();
-    while (true) {
-        // Update switch states
         esos_uiF14_checkHW();
-        if (esos_uiF14_isSW1Pressed()) {
-            continuousOutput = 0; // Stop printing continuously if sw1 pressed
-            esos_RegisterTask(READ_ADC);
-        }
-        if (esos_uiF14_isSW2Pressed()) {
-            ESOS_TASK_WAIT_UNTIL_UIF14_SW2_RELEASED();
-            continuousOutput = !continuousOutput; // Print continuously if sw2 released
-        }
-        if (continuousOutput) {
-            esos_RegisterTask(READ_ADC);
-            ESOS_TASK_WAIT_TICKS(1000); // Prints potentiometer voltage every second
-        }
-        if (esos_uiF14_isSW3Pressed()) { // Display interface options for sw3 press
-            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-            ESOS_TASK_WAIT_ON_SEND_STRING("Enter a processing mode. Press 1 for one-shot, ");
-            ESOS_TASK_WAIT_ON_SEND_STRING("2 for average, 3 for minimum, 4 for maximum, or 5 for median: ");
-            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+        memset(temp_string, ' ', 10);
+        if (displayTemp) {
+            // display temperature
+            ESOS_TASK_WAIT_ON_AVAILABLE_SENSOR(ESOS_SENSOR_CH03, ESOS_SENSOR_VREF_1V0);
+            ESOS_TASK_WAIT_SENSOR_READ(temp_data, 0, ESOS_SENSOR_FORMAT_VOLTAGE); // one-shot read
+            ESOS_SENSOR_CLOSE();
 
-            // Get processing mode
-            ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
-            ESOS_TASK_WAIT_ON_GET_STRING(processMode);
-            ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
+            uint32_t pu32_out;
+            uint16_t pu16_out;
 
-            // Echo input
-            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-            ESOS_TASK_WAIT_ON_SEND_STRING(processMode);
-            ESOS_TASK_WAIT_ON_SEND_STRING("\n");
-            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+            // Convert mV to degrees Celsius per datasheet
+            pu32_out = (uint32_t)temp_data * 1000; // Cast to uint32_t to prevent overflow
+            pu32_out = (pu32_out - 424000) / 625;
+            pu32_out /= 100;
+            pu16_out = (uint32_t) pu32_out;
 
-            input1 = atoi(processMode); // Convert char array to uint8_t
-            // Don't ask for samples if one-shot mode is selected
-            if (input1 != 1) {
-                ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-                ESOS_TASK_WAIT_ON_SEND_STRING("Enter the number of samples for the process. \n1) 2\n2) 4\n3) 8\n4) 16\n5) 32\n6) 64\n");
-                ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+            sprintf(temp_string, "%dC\0", pu16_out);
+            esos_lcd44780_writeString(0, 0, "LM60    \0");
+            esos_lcd44780_writeString(1, 0, temp_string);
+            esos_lcd44780_writeString(1, 3, "     \0"); // Don't worry about it
 
-                // Get number of samples
-                ESOS_TASK_WAIT_ON_AVAILABLE_IN_COMM();
-                ESOS_TASK_WAIT_ON_GET_STRING(numSamples);
-                ESOS_TASK_SIGNAL_AVAILABLE_IN_COMM();
-
-                // Echo input
-                ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-                ESOS_TASK_WAIT_ON_SEND_STRING(numSamples);
-                ESOS_TASK_WAIT_ON_SEND_STRING("\n");
-                ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
-
-                input2 = atoi(numSamples); // Convert char array to uint8_t
-                // Don't do this for average mode (special case: bit shifting
-                // does not work)
-                if (input1 != 2) {
-                    // Ignore one for one-shot, start at zero so subtract 2
-                    // Then add 4 to move over to the upper 4 bits
-                    // -2 + 4 = 2, so add 2 to input 1 to get bit shift amount
-                    input1 += 2;
-                    pmode = 1 << input1; // bit-shift over to select processing mode
-                    pmode |= input2; // bit-wise OR to select number of samples (bottom 4 bits)
-                }
-                else {
-                    pmode = input2; // Process mode is 0x01-0x06 for average mode
-                }
+            temp_level = (pu16_out % 20) % 8; //determing custom char
+            esos_lcd44780_setCustomChar(0, temp_bar[temp_level]); //Displaying custom char
+            if (pu16_out >= 35) {
+                esos_lcd44780_writeChar(0, 7, 0xFF);
+                esos_lcd44780_writeChar(1, 7, 0xFF);
+            }
+            else if (pu16_out > 27) {
+                esos_lcd44780_writeChar(0, 7, 0);
+                esos_lcd44780_writeChar(1, 7, 0xFF);
+            }
+            else if (pu16_out >= 20) {
+                esos_lcd44780_writeChar(0, 7, (uint8_t)' ');
+                esos_lcd44780_writeChar(1, 7, 0);
             }
             else {
-                pmode = 0; // Process mode is 0 for one-shot
+                esos_lcd44780_setCustomChar(0, temp_bar[0]);
+                esos_lcd44780_writeChar(0, 7, (uint8_t)' ');
+                esos_lcd44780_writeChar(1, 7, 0);
+
             }
         }
-        ESOS_TASK_WAIT_TICKS(200);
-        ESOS_TASK_YIELD();
+        else {
+            // display potentiometer
+            ESOS_TASK_WAIT_ON_AVAILABLE_SENSOR(ESOS_SENSOR_CH02, ESOS_SENSOR_VREF_1V0);
+            ESOS_TASK_WAIT_SENSOR_READ(temp_data, 0, ESOS_SENSOR_FORMAT_VOLTAGE);
+            ESOS_SENSOR_CLOSE();
+
+            temp_data *= 13; // Normalize so it goes up to ~0xffff
+            sprintf(temp_string, "0x%x\0", temp_data >> 8);
+            esos_lcd44780_writeString(0, 0, "pot \0");
+            esos_lcd44780_writeString(0, 4, temp_string);
+/*
+            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
+            ESOS_TASK_WAIT_ON_SEND_UINT16_AS_HEX_STRING(temp_data * 13);
+            ESOS_TASK_WAIT_ON_SEND_UINT8('\n');
+            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
+            */
+
+            if (temp_data <= 0x10b7)
+                esos_lcd44780_writeString(1, 0, "+-------\0");
+            if ((temp_data > 0x10b7) && (temp_data <= 0x10b7 + 0x21dd))
+                esos_lcd44780_writeString(1, 0, "-+------\0");
+            if ((temp_data > 0x10b7 + 0x21dd) && (temp_data <= 0x10b7 + 0x43ba))
+                esos_lcd44780_writeString(1, 0, "--+-----\0");
+            if (temp_data > 0x10b7 + 0x43ba && temp_data <= 0x10b7 + 0x6597)
+                esos_lcd44780_writeString(1, 0, "---+----\0");
+            if (temp_data > 0x10b7 + 0x6597 && temp_data <= 0x10b7 + 0x8774)
+                esos_lcd44780_writeString(1, 0, "----+---\0");
+            if (temp_data > 0x10b7 + 0x8774 && temp_data <= 0x10b7 + 0xa951)
+                esos_lcd44780_writeString(1, 0, "-----+--\0");
+            if (temp_data > 0x10b7 + 0xa951 && temp_data <= 0x10b7 + 0xcb2e)
+                esos_lcd44780_writeString(1, 0, "------+-\0");
+            if (temp_data > 0x10b7 + 0xcb2e && temp_data <= 0x10b7 + 0xed0b)
+                esos_lcd44780_writeString(1, 0, "-------+\0");
+        }
+        if (esos_uiF14_isSW3Pressed()) {
+            outString("SW3 pressed\n");
+            ESOS_TASK_WAIT_TICKS(100);
+            displayTemp = !displayTemp;
+        }
+        ESOS_TASK_WAIT_TICKS(250);
     }
     ESOS_TASK_END();
 }

@@ -39,13 +39,15 @@ ESOS_USER_TASK ( READ_ADC ) {
     ESOS_SENSOR_CLOSE();
 
     uint32_t pu32_out;
+    uint16_t pu16_out;
 
     // Convert mV to degrees Celsius per datasheet
     pu32_out = (uint32_t)temp_data * 1000; // Cast to uint32_t to prevent overflow
     pu32_out = (pu32_out - 424000) / 625;
     pu32_out /= 100;
+    pu16_out = (uint16_t) pu32_out;
     // Convert integer to char array, essentially itoa()
-    snprintf(temp_string, sizeof(temp_string), "%d", pu32_out);
+    sprintf(temp_string, "%dC", pu16_out);
 
     // Output data from ADC
     ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();

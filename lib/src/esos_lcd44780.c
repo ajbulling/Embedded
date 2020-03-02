@@ -118,6 +118,7 @@ ESOS_USER_TASK( __esos_lcd44780_service )
 					esos_lcd44780_vars.b_cursorPositionNeedsUpdate = TRUE;
 					ESOS_TASK_WAIT_LCD44780_SET_DATA_ADDRESS((u8_row > 0 ? 0x40 : 0x00) | u8_col);
 					do {
+                        DELAY_US(20);
 						esos_lcd44780_vars.ab_lcdBufferNeedsUpdate[u8_row][u8_col] = FALSE;
 						ESOS_TASK_WAIT_LCD44780_WRITE_DATA(esos_lcd44780_vars.aac_lcdBuffer[u8_row][u8_col]);
 						++u8_col;

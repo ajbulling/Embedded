@@ -101,41 +101,25 @@ For Microchip dsPIC33EP512GP806
 // datasheet
 #define CONFIG_LCD_INPUT() { \
     CONFIG_RE0_AS_DIG_INPUT(); \
-    ENABLE_RE0_PULLUP(); \
     CONFIG_RE1_AS_DIG_INPUT(); \
-    ENABLE_RE1_PULLUP(); \
     CONFIG_RE2_AS_DIG_INPUT(); \
-    ENABLE_RE2_PULLUP(); \
     CONFIG_RE3_AS_DIG_INPUT(); \
-    ENABLE_RE3_PULLUP(); \
     CONFIG_RE4_AS_DIG_INPUT(); \
-    ENABLE_RE4_PULLUP(); \
     CONFIG_RE5_AS_DIG_INPUT(); \
-    ENABLE_RE5_PULLUP(); \
     CONFIG_RE6_AS_DIG_INPUT(); \
-    ENABLE_RE6_PULLUP(); \
     CONFIG_RE7_AS_DIG_INPUT(); \
-    ENABLE_RE7_PULLUP(); \
 }
 
 // Configure LCD data pins as output, use a tristate circuit according to the
 // datasheet
 #define CONFIG_LCD_OUTPUT() { \
     CONFIG_RE0_AS_DIG_OUTPUT(); \
-    DISABLE_RE0_PULLUP(); \
     CONFIG_RE1_AS_DIG_OUTPUT(); \
-    DISABLE_RE1_PULLUP(); \
     CONFIG_RE2_AS_DIG_OUTPUT(); \
-    DISABLE_RE2_PULLUP(); \
     CONFIG_RE3_AS_DIG_OUTPUT(); \
-    DISABLE_RE3_PULLUP(); \
     CONFIG_RE4_AS_DIG_OUTPUT(); \
-    DISABLE_RE4_PULLUP(); \
     CONFIG_RE5_AS_DIG_OUTPUT(); \
-    DISABLE_RE5_PULLUP(); \
     CONFIG_RE6_AS_DIG_OUTPUT(); \
-    DISABLE_RE6_PULLUP(); \
     CONFIG_RE7_AS_DIG_OUTPUT(); \
-    DISABLE_RE7_PULLUP(); \
 }
 

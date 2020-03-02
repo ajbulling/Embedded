@@ -46,7 +46,8 @@ void __esos_lcd44780_pic24_config ( void )
 void __esos_lcd44780_pic24_setDataPins( uint8_t u8_data) {
 	// write the hardware-specific code to take the u8_data passed in
 	// and place it on the appropriate data pins
-    LCD_D0 = u8_data & 0b00000001;
+    /*
+    LCD_D0 = u8_data & 0x01;
     LCD_D1 = (u8_data & 0x02) >> 1;
     LCD_D2 = (u8_data & 0x04) >> 2;
     LCD_D3 = (u8_data & 0x08) >> 3;
@@ -54,11 +55,29 @@ void __esos_lcd44780_pic24_setDataPins( uint8_t u8_data) {
     LCD_D5 = (u8_data & 0x20) >> 5;
     LCD_D6 = (u8_data & 0x40) >> 6;
     LCD_D7 = (u8_data & 0x80) >> 7;
+    */
+    if((u8_data >> 0) & 0x01) __ESOS_LCD44780_PIC24_SET_D0;
+    else __ESOS_LCD44780_PIC24_CLEAR_D0;
+    if((u8_data >> 1) & 0x01) __ESOS_LCD44780_PIC24_SET_D1;
+    else __ESOS_LCD44780_PIC24_CLEAR_D1;
+    if((u8_data >> 2) & 0x01) __ESOS_LCD44780_PIC24_SET_D2;
+    else __ESOS_LCD44780_PIC24_CLEAR_D2;
+    if((u8_data >> 3) & 0x01) __ESOS_LCD44780_PIC24_SET_D3;
+    else __ESOS_LCD44780_PIC24_CLEAR_D3;
+    if((u8_data >> 4) & 0x01) __ESOS_LCD44780_PIC24_SET_D4;
+    else __ESOS_LCD44780_PIC24_CLEAR_D4;
+    if((u8_data >> 5) & 0x01) __ESOS_LCD44780_PIC24_SET_D5;
+    else __ESOS_LCD44780_PIC24_CLEAR_D5;
+    if((u8_data >> 6) & 0x01) __ESOS_LCD44780_PIC24_SET_D6;
+    else __ESOS_LCD44780_PIC24_CLEAR_D6;
+    if((u8_data >> 7) & 0x01) __ESOS_LCD44780_PIC24_SET_D7;
+    else __ESOS_LCD44780_PIC24_CLEAR_D7;
 }
 
 uint8_t __esos_lcd44780_pic24_getDataPins( void ) {
 	// write the hardware-specific code to read the appropriate data pins
 	// and create the uint8 data to return to the caller
+    /*
     uint8_t data = 0;
 
     data |= LCD_D0;
@@ -71,6 +90,17 @@ uint8_t __esos_lcd44780_pic24_getDataPins( void ) {
     data |= LCD_D7 << 7;
 
     return data;
+    */
+    uint8_t u8_return_data = 0x00;
+    u8_return_data = (u8_return_data & 0) | __ESOS_LCD44780_PIC24_GET_D0;
+    u8_return_data = (u8_return_data & 1) | __ESOS_LCD44780_PIC24_GET_D1;
+    u8_return_data = (u8_return_data & 2) | __ESOS_LCD44780_PIC24_GET_D2;
+    u8_return_data = (u8_return_data & 3) | __ESOS_LCD44780_PIC24_GET_D3;
+    u8_return_data = (u8_return_data & 4) | __ESOS_LCD44780_PIC24_GET_D4;
+    u8_return_data = (u8_return_data & 5) | __ESOS_LCD44780_PIC24_GET_D5;
+    u8_return_data = (u8_return_data & 6) | __ESOS_LCD44780_PIC24_GET_D6;
+    u8_return_data = (u8_return_data & 7) | __ESOS_LCD44780_PIC24_GET_D7;
+    return u8_return_data;
 }
 
 void __esos_lcd44780_pic24_configDataPinsAsInput( void ) {
