@@ -16,17 +16,11 @@
 #include "esos_pic24_lcd44780.h"
 #include "esos_pic24_lcd44780.c"
 
-uint16_t temp_data; // Temporary ADC data
-char* processMode [1];
-char* numSamples [1];
-char temp_string[10]; // Temporary char array
-uint8_t input1; // Process mode (integer)
-uint8_t input2; // Number of samples (integer)
-uint8_t pmode = 0; // Actual process mode argument (must be calculated)
-bool continuousOutput = false;
+uint16_t adc_data;
+char string_data[10];
 bool displayTemp = false;
 
-uint8_t temp_level; // Temp stands for temperature
+uint8_t temp_level; // Temperature level
 uint8_t temp_bar[8][8] = { {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F},   // 1/8 full block
                                               {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F},   // 1/4 full block
                                               {0x00, 0x00, 0x00, 0x00, 0x00, 0x1F, 0x1F, 0x1F},   // 3/8 full block
@@ -48,33 +42,33 @@ ESOS_USER_TASK ( LED3_blink ) {
 
 ESOS_USER_TASK( LCD_INTERFACE ) {
     ESOS_TASK_BEGIN();
-    ESOS_TASK_WAIT_TICKS(1000);
+    ESOS_TASK_WAIT_TICKS(1000); // Give the LCD time to initialize
     esos_lcd44780_configDisplay();
     esos_lcd44780_clearScreen();
     esos_lcd44780_setCursorDisplay(false);
     esos_lcd44780_setCursorBlink(false);
     while (true) {
         esos_uiF14_checkHW();
-        memset(temp_string, ' ', 10);
+        memset(string_data, ' ', 10); // clear data array
         if (displayTemp) {
             // display temperature
             ESOS_TASK_WAIT_ON_AVAILABLE_SENSOR(ESOS_SENSOR_CH03, ESOS_SENSOR_VREF_1V0);
-            ESOS_TASK_WAIT_SENSOR_READ(temp_data, 0, ESOS_SENSOR_FORMAT_VOLTAGE); // one-shot read
+            ESOS_TASK_WAIT_SENSOR_READ(adc_data, 0, ESOS_SENSOR_FORMAT_VOLTAGE); // one-shot read
             ESOS_SENSOR_CLOSE();
 
             uint32_t pu32_out;
             uint16_t pu16_out;
 
             // Convert mV to degrees Celsius per datasheet
-            pu32_out = (uint32_t)temp_data * 1000; // Cast to uint32_t to prevent overflow
+            pu32_out = (uint32_t)adc_data * 1000; // Cast to uint32_t to prevent overflow
             pu32_out = (pu32_out - 424000) / 625;
             pu32_out /= 100;
-            pu16_out = (uint32_t) pu32_out;
+            pu16_out = (uint32_t) pu32_out; // Cast back to uint16_t for sprintf to work
 
-            sprintf(temp_string, "%dC\0", pu16_out);
+            sprintf(string_data, "%dC\0", pu16_out); // Convert uint16_t to char array
             esos_lcd44780_writeString(0, 0, "LM60    \0");
-            esos_lcd44780_writeString(1, 0, temp_string);
-            esos_lcd44780_writeString(1, 3, "     \0"); // Don't worry about it
+            esos_lcd44780_writeString(1, 0, string_data);
+            esos_lcd44780_writeString(1, 3, "     \0"); // Clear bottom part of screen
 
             temp_level = (pu16_out % 20) % 8; //determing custom char
             esos_lcd44780_setCustomChar(0, temp_bar[temp_level]); //Displaying custom char
@@ -100,43 +94,39 @@ ESOS_USER_TASK( LCD_INTERFACE ) {
         else {
             // display potentiometer
             ESOS_TASK_WAIT_ON_AVAILABLE_SENSOR(ESOS_SENSOR_CH02, ESOS_SENSOR_VREF_1V0);
-            ESOS_TASK_WAIT_SENSOR_READ(temp_data, 0, ESOS_SENSOR_FORMAT_VOLTAGE);
+            ESOS_TASK_WAIT_SENSOR_READ(adc_data, 0, ESOS_SENSOR_FORMAT_VOLTAGE); // one-shot read
             ESOS_SENSOR_CLOSE();
 
-            temp_data *= 13; // Normalize so it goes up to ~0xffff
-            sprintf(temp_string, "0x%x\0", temp_data >> 8);
+            adc_data *= 13; // Normalize so it goes up to ~0xffff
+            sprintf(string_data, "0x%x\0", adc_data >> 8); // Shift over to only display top 8 bits
             esos_lcd44780_writeString(0, 0, "pot \0");
-            esos_lcd44780_writeString(0, 4, temp_string);
-/*
-            ESOS_TASK_WAIT_ON_AVAILABLE_OUT_COMM();
-            ESOS_TASK_WAIT_ON_SEND_UINT16_AS_HEX_STRING(temp_data * 13);
-            ESOS_TASK_WAIT_ON_SEND_UINT8('\n');
-            ESOS_TASK_SIGNAL_AVAILABLE_OUT_COMM();
-            */
+            esos_lcd44780_writeString(0, 4, string_data);
 
-            if (temp_data <= 0x10b7)
+            // Custom potentiometer voltage intervals for "slider" bar
+            if (adc_data <= 0x10b7)
                 esos_lcd44780_writeString(1, 0, "+-------\0");
-            if ((temp_data > 0x10b7) && (temp_data <= 0x10b7 + 0x21dd))
+            if ((adc_data > 0x10b7) && (adc_data <= 0x10b7 + 0x21dd))
                 esos_lcd44780_writeString(1, 0, "-+------\0");
-            if ((temp_data > 0x10b7 + 0x21dd) && (temp_data <= 0x10b7 + 0x43ba))
+            if ((adc_data > 0x10b7 + 0x21dd) && (adc_data <= 0x10b7 + 0x43ba))
                 esos_lcd44780_writeString(1, 0, "--+-----\0");
-            if (temp_data > 0x10b7 + 0x43ba && temp_data <= 0x10b7 + 0x6597)
+            if (adc_data > 0x10b7 + 0x43ba && adc_data <= 0x10b7 + 0x6597)
                 esos_lcd44780_writeString(1, 0, "---+----\0");
-            if (temp_data > 0x10b7 + 0x6597 && temp_data <= 0x10b7 + 0x8774)
+            if (adc_data > 0x10b7 + 0x6597 && adc_data <= 0x10b7 + 0x8774)
                 esos_lcd44780_writeString(1, 0, "----+---\0");
-            if (temp_data > 0x10b7 + 0x8774 && temp_data <= 0x10b7 + 0xa951)
+            if (adc_data > 0x10b7 + 0x8774 && adc_data <= 0x10b7 + 0xa951)
                 esos_lcd44780_writeString(1, 0, "-----+--\0");
-            if (temp_data > 0x10b7 + 0xa951 && temp_data <= 0x10b7 + 0xcb2e)
+            if (adc_data > 0x10b7 + 0xa951 && adc_data <= 0x10b7 + 0xcb2e)
                 esos_lcd44780_writeString(1, 0, "------+-\0");
-            if (temp_data > 0x10b7 + 0xcb2e && temp_data <= 0x10b7 + 0xed0b)
+            if (adc_data > 0x10b7 + 0xcb2e && adc_data <= 0x10b7 + 0xed0b)
                 esos_lcd44780_writeString(1, 0, "-------+\0");
         }
+        // Change display state when SW3 is pressed
         if (esos_uiF14_isSW3Pressed()) {
             outString("SW3 pressed\n");
-            ESOS_TASK_WAIT_TICKS(100);
+            ESOS_TASK_WAIT_TICKS(100); // Wait to give it time to be released
             displayTemp = !displayTemp;
         }
-        ESOS_TASK_WAIT_TICKS(250);
+        ESOS_TASK_WAIT_TICKS(250); // Wait so screen has time to update
     }
     ESOS_TASK_END();
 }

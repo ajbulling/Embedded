@@ -59,15 +59,15 @@ PIC24SupportLibSources = [
   'lib/src/pic24_timer.c',
   'lib/src/pic24_uart.c',
   'lib/src/pic24_util.c',
-  'esos/src/esos.c',
-  'esos/src/esos_comm.c',
-  'esos/src/esos_cb.c',
-  'esos/src/esos_mail.c',
-  'esos/src/pic24/esos_pic24_i2c.c',
-  'esos/src/pic24/esos_pic24_irq.c',
-  'esos/src/pic24/esos_pic24_rs232.c',
-  'esos/src/pic24/esos_pic24_spi.c',
-  'esos/src/pic24/esos_pic24_tick.c', ]
+  'lib/src/esos.c',
+  'lib/src/esos_comm.c',
+  'lib/src/esos_cb.c',
+  'lib/src/esos_mail.c',
+  'lib/src/pic24/esos_pic24_i2c.c',
+  'lib/src/pic24/esos_pic24_irq.c',
+  'lib/src/pic24/esos_pic24_rs232.c',
+  'lib/src/pic24/esos_pic24_spi.c',
+  'lib/src/pic24/esos_pic24_tick.c', ]
 
 # Functions used to build the library
 # ===================================
