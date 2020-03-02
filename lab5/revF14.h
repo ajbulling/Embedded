@@ -97,8 +97,7 @@ For Microchip dsPIC33EP512GP806
 #define LCD_D6 (_LATE6)
 #define LCD_D7 (_LATE7)
 
-// Configure LCD data pins as input, pins must be fixed high or low per
-// datasheet
+// Configure LCD data pins as input
 #define CONFIG_LCD_INPUT() { \
     CONFIG_RE0_AS_DIG_INPUT(); \
     CONFIG_RE1_AS_DIG_INPUT(); \
@@ -110,13 +109,26 @@ For Microchip dsPIC33EP512GP806
     CONFIG_RE7_AS_DIG_INPUT(); \
 }
 
-// Configure LCD data pins as output, use a tristate circuit according to the
-// datasheet
+#define CONFIG_LCD_INPUT_NIBBLE() { \
+    CONFIG_RE4_AS_DIG_INPUT(); \
+    CONFIG_RE5_AS_DIG_INPUT(); \
+    CONFIG_RE6_AS_DIG_INPUT(); \
+    CONFIG_RE7_AS_DIG_INPUT(); \
+}
+
+// Configure LCD data pins as output
 #define CONFIG_LCD_OUTPUT() { \
     CONFIG_RE0_AS_DIG_OUTPUT(); \
     CONFIG_RE1_AS_DIG_OUTPUT(); \
     CONFIG_RE2_AS_DIG_OUTPUT(); \
     CONFIG_RE3_AS_DIG_OUTPUT(); \
+    CONFIG_RE4_AS_DIG_OUTPUT(); \
+    CONFIG_RE5_AS_DIG_OUTPUT(); \
+    CONFIG_RE6_AS_DIG_OUTPUT(); \
+    CONFIG_RE7_AS_DIG_OUTPUT(); \
+}
+
+#define CONFIG_LCD_OUTPUT_NIBBLE() { \
     CONFIG_RE4_AS_DIG_OUTPUT(); \
     CONFIG_RE5_AS_DIG_OUTPUT(); \
     CONFIG_RE6_AS_DIG_OUTPUT(); \

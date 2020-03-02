@@ -46,7 +46,7 @@ void __esos_lcd44780_pic24_config ( void )
 void __esos_lcd44780_pic24_setDataPins( uint8_t u8_data) {
 	// write the hardware-specific code to take the u8_data passed in
 	// and place it on the appropriate data pins
-
+#ifndef USE_NIBBLE_MODE
     if((u8_data >> 0) & 0x01) __ESOS_LCD44780_PIC24_SET_D0;
     else __ESOS_LCD44780_PIC24_CLEAR_D0;
     if((u8_data >> 1) & 0x01) __ESOS_LCD44780_PIC24_SET_D1;
@@ -63,13 +63,23 @@ void __esos_lcd44780_pic24_setDataPins( uint8_t u8_data) {
     else __ESOS_LCD44780_PIC24_CLEAR_D6;
     if((u8_data >> 7) & 0x01) __ESOS_LCD44780_PIC24_SET_D7;
     else __ESOS_LCD44780_PIC24_CLEAR_D7;
+#else
+    if((u8_data >> 4) & 0x01) __ESOS_LCD44780_PIC24_SET_D4;
+    else __ESOS_LCD44780_PIC24_CLEAR_D4;
+    if((u8_data >> 5) & 0x01) __ESOS_LCD44780_PIC24_SET_D5;
+    else __ESOS_LCD44780_PIC24_CLEAR_D5;
+    if((u8_data >> 6) & 0x01) __ESOS_LCD44780_PIC24_SET_D6;
+    else __ESOS_LCD44780_PIC24_CLEAR_D6;
+    if((u8_data >> 7) & 0x01) __ESOS_LCD44780_PIC24_SET_D7;
+    else __ESOS_LCD44780_PIC24_CLEAR_D7;
+#endif
 }
 
 uint8_t __esos_lcd44780_pic24_getDataPins( void ) {
 	// write the hardware-specific code to read the appropriate data pins
 	// and create the uint8 data to return to the caller
-    
     uint8_t u8_return_data = 0x00;
+#ifndef USE_NIBBLE_MODE
     u8_return_data = (u8_return_data & 0) | __ESOS_LCD44780_PIC24_GET_D0;
     u8_return_data = (u8_return_data & 1) | __ESOS_LCD44780_PIC24_GET_D1;
     u8_return_data = (u8_return_data & 2) | __ESOS_LCD44780_PIC24_GET_D2;
@@ -78,19 +88,33 @@ uint8_t __esos_lcd44780_pic24_getDataPins( void ) {
     u8_return_data = (u8_return_data & 5) | __ESOS_LCD44780_PIC24_GET_D5;
     u8_return_data = (u8_return_data & 6) | __ESOS_LCD44780_PIC24_GET_D6;
     u8_return_data = (u8_return_data & 7) | __ESOS_LCD44780_PIC24_GET_D7;
+#else
+    u8_return_data = (u8_return_data & 4) | __ESOS_LCD44780_PIC24_GET_D4;
+    u8_return_data = (u8_return_data & 5) | __ESOS_LCD44780_PIC24_GET_D5;
+    u8_return_data = (u8_return_data & 6) | __ESOS_LCD44780_PIC24_GET_D6;
+    u8_return_data = (u8_return_data & 7) | __ESOS_LCD44780_PIC24_GET_D7;
+#endif
     return u8_return_data;
 }
 
 void __esos_lcd44780_pic24_configDataPinsAsInput( void ) {
 	// write the hardware-specific code to set the LCD character module
 	// data pins to be "inputs" to prepare for a read of the LCD module
+#ifndef USE_NIBBLE_MODE
     CONFIG_LCD_INPUT();
+#else
+    CONFIG_LCD_INPUT_NIBBLE();
+#endif
 	__ESOS_LCD44780_PIC24_SET_RW_READ;
 }
 
 void __esos_lcd44780_pic24_configDataPinsAsOutput( void ) {
 	// write the hardware-specific code to set the LCD character module
 	// data pins to be "outputs" to prepare for a write to the LCD module
+#ifndef USE_NIBBLE_MODE();
     CONFIG_LCD_OUTPUT();
+#else
+    CONFIG_LCD_OUTPUT_NIBBLE();
+#endif
 	__ESOS_LCD44780_PIC24_SET_RW_WRITE;
 }

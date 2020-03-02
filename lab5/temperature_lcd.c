@@ -88,7 +88,6 @@ ESOS_USER_TASK( LCD_INTERFACE ) {
                 esos_lcd44780_setCustomChar(0, temp_bar[0]);
                 esos_lcd44780_writeChar(0, 7, (uint8_t)' ');
                 esos_lcd44780_writeChar(1, 7, 0);
-
             }
         }
         else {
@@ -103,21 +102,21 @@ ESOS_USER_TASK( LCD_INTERFACE ) {
             esos_lcd44780_writeString(0, 4, string_data);
 
             // Custom potentiometer voltage intervals for "slider" bar
-            if (adc_data <= 0x10b7)
+            if (adc_data <= 0x13b7)
                 esos_lcd44780_writeString(1, 0, "+-------\0");
-            if ((adc_data > 0x10b7) && (adc_data <= 0x10b7 + 0x21dd))
+            if ((adc_data > 0x13b7) && (adc_data <= 0x10b7 + 0x21dd))
                 esos_lcd44780_writeString(1, 0, "-+------\0");
-            if ((adc_data > 0x10b7 + 0x21dd) && (adc_data <= 0x10b7 + 0x43ba))
+            if ((adc_data > 0x13b7 + 0x21dd) && (adc_data <= 0x10b7 + 0x43ba))
                 esos_lcd44780_writeString(1, 0, "--+-----\0");
-            if (adc_data > 0x10b7 + 0x43ba && adc_data <= 0x10b7 + 0x6597)
+            if (adc_data > 0x13b7 + 0x43ba && adc_data <= 0x10b7 + 0x6597)
                 esos_lcd44780_writeString(1, 0, "---+----\0");
-            if (adc_data > 0x10b7 + 0x6597 && adc_data <= 0x10b7 + 0x8774)
+            if (adc_data > 0x13b7 + 0x6597 && adc_data <= 0x10b7 + 0x8774)
                 esos_lcd44780_writeString(1, 0, "----+---\0");
-            if (adc_data > 0x10b7 + 0x8774 && adc_data <= 0x10b7 + 0xa951)
+            if (adc_data > 0x13b7 + 0x8774 && adc_data <= 0x10b7 + 0xa951)
                 esos_lcd44780_writeString(1, 0, "-----+--\0");
-            if (adc_data > 0x10b7 + 0xa951 && adc_data <= 0x10b7 + 0xcb2e)
+            if (adc_data > 0x13b7 + 0xa951 && adc_data <= 0x10b7 + 0xcb2e)
                 esos_lcd44780_writeString(1, 0, "------+-\0");
-            if (adc_data > 0x10b7 + 0xcb2e && adc_data <= 0x10b7 + 0xed0b)
+            if (adc_data > 0x13b7 + 0xcb2e && adc_data <= 0x10b7 + 0xed0b)
                 esos_lcd44780_writeString(1, 0, "-------+\0");
         }
         // Change display state when SW3 is pressed

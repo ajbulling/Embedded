@@ -67,7 +67,7 @@ ESOS_USER_TASK( __esos_lcd44780_service )
 	// The LCD service hidden task will need to maintain a buffer containing the LCD character display
 	ESOS_TASK_BEGIN();
 
-
+#ifndef USE_NIBBLE_MODE
 	// TODO: remove the magic numbers in this section
 	ESOS_TASK_WAIT_TICKS(100);			// Wait >15 msec after power is applied
 	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NOWAIT(0x30);
@@ -76,19 +76,27 @@ ESOS_USER_TASK( __esos_lcd44780_service )
 	ESOS_TASK_WAIT_TICKS(1);			// must wait 160us, busy flag not available
 	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NOWAIT(0x30);
 	ESOS_TASK_WAIT_TICKS(1);			// must wait 160us, busy flag not available
+
+	// Send startup sequence from datasheet
 	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x38);
 	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x10);
 	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x0C);
 	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x06);
+#else
+	ESOS_TASK_WAIT_TICKS(100);			// Wait >15 msec after power is applied
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NOWAIT_NIBBLE(0x30);
+	ESOS_TASK_WAIT_TICKS(10);			// must wait 5ms, busy flag not available
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NOWAIT_NIBBLE(0x30);
+	ESOS_TASK_WAIT_TICKS(1);			// must wait 160us, busy flag not available
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NOWAIT_NIBBLE(0x30);
+	ESOS_TASK_WAIT_TICKS(1);			// must wait 160us, busy flag not available
 
 	// Send startup sequence from datasheet
-	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(  ESOS_LCD44780_CMD_DISPLAY_ON_OFF);
-	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(  ESOS_LCD44780_CMD_FUNCTION_SET | 0b00011100);
-	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(  ESOS_LCD44780_CMD_DISPLAY_ON_OFF |
-                                            ESOS_LCD44780_CMD_DISPLAY_ON_OFF_CUR |
-                                            ESOS_LCD44780_CMD_DISPLAY_ON_OFF_DISP);
-	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(  ESOS_LCD44780_CMD_ENTRY_MODE_SET |
-                                            ESOS_LCD44780_CMD_ENTRY_MODE_SET_INC);
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND_NIBBLE(0x28);
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x10);
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x0f);
+	ESOS_TASK_WAIT_LCD44780_WRITE_COMMAND(0x06);
+#endif
 
 	while(TRUE) {
 		static uint8_t i, u8_col, u8_row;
@@ -421,7 +429,7 @@ ESOS_CHILD_TASK(__esos_lcd44780_read_u8, uint8_t *pu8_data, BOOL b_isData, BOOL 
 	ESOS_TASK_END();
 }
 
-ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b_useBusyFlag)
+ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b_useBusyFlag, BOOL b_useNibbleMode)
 {
 	ESOS_TASK_BEGIN();
 
@@ -440,13 +448,22 @@ ESOS_CHILD_TASK(__esos_lcd44780_write_u8, uint8_t u8_data, BOOL b_isData, BOOL b
 	
     __ESOS_LCD44780_PIC24_SET_RW_WRITE;
 	__esos_lcd44780_pic24_configDataPinsAsOutput();
-    
-    __esos_lcd44780_pic24_setDataPins( u8_data );
 
+    // Send bottom 4 bits in nibble mode
+    if ( b_useNibbleMode) {
+        __esos_lcd44780_pic24_setDataPins(u8_data << 4);
+        __ESOS_LCD44780_PIC24_SET_E_HIGH;
+        ESOS_TASK_YIELD();
+        __ESOS_LCD44780_PIC24_SET_E_LOW;
+        ESOS_TASK_YIELD();
+    }
+
+    // Send top 4 bits in nibble mode, or everything in normal mode
+    __esos_lcd44780_pic24_setDataPins( u8_data );
 	__ESOS_LCD44780_PIC24_SET_E_HIGH;
-	ESOS_TASK_YIELD();
+    ESOS_TASK_YIELD();
 	__ESOS_LCD44780_PIC24_SET_E_LOW;
-	ESOS_TASK_YIELD();
+    ESOS_TASK_YIELD();
 
 	ESOS_TASK_END();
 }
@@ -462,10 +479,22 @@ ESOS_CHILD_TASK( __esos_task_wait_lcd44780_while_busy  )
 		__ESOS_LCD44780_PIC24_SET_RS_REGISTERS;
 		__ESOS_LCD44780_PIC24_SET_RW_READ;
 		__ESOS_LCD44780_PIC24_SET_E_HIGH;
+        ESOS_TASK_WAIT_TICKS(1);
+
+#ifndef USE_NIBBLE_MODE
 		b_pic24_lcd_isBusy = (__esos_lcd44780_pic24_getDataPins() & 0x80);
+#else
+        b_pic24_lcd_isBusy = (__esos_lcd44780_pic24_getDataPins() >> 3);
+        __ESOS_LCD44780_PIC24_SET_E_LOW;
+        ESOS_TASK_WAIT_TICKS(1);
+        __ESOS_LCD44780_PIC24_SET_E_HIGH;
+        ESOS_TASK_WAIT_TICKS(1);
+#endif
 		__ESOS_LCD44780_PIC24_SET_E_LOW;
+        ESOS_TASK_WAIT_TICKS(1);
+
         if ( b_pic24_lcd_isBusy ){
-            ESOS_TASK_YIELD();
+            ESOS_TASK_WAIT_TICKS(1);
         } else {
             ESOS_TASK_EXIT();
         }
